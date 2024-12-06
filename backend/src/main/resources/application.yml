@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: knowledgeforge
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:admin@cluster0.cn5cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      database: lms
+
+#application:
+#  security:
+#    jwt:
+#      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+#      expiration: 86400000 # a day
+
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+  allowed-headers: "*"
+  exposed-headers: "*"
