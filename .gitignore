@@ -1,0 +1,103 @@
+### General ###
+*.log
+logs/
+*.DS_Store
+*.env
+*.env.*
+
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Gradle ###
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### Spring Boot ###
+*.class
+*.war
+*.jar
+BOOT-INF/
+META-INF/
+dependency-reduced-pom.xml
+
+### React ###
+node_modules/
+build/
+coverage/
+.npm
+.yarn/
+.yarn-integrity
+.pnp.*
+
+### Redux ###
+/.store
+
+### IDE Specific ###
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# Eclipse/STS
+.project
+.classpath
+.factorypath
+.settings/
+.springBeans
+.sts4-cache
+.apt_generated
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Temporary Files ###
+*.swp
+*.swo
+*.tmp
+~$*
+
+### Dependency directories ###
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+
+### Coverage ###
+coverage/
+.nyc_output
+
+### Lint ###
+.eslintcache
+.stylelintcache
+
+### Logs ###
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Misc ###
+# Debug files
+.pnpm-debug.log*
+report.[0-9]*.json
+
+# Cache
+.cache/
+.parcel-cache
+
+# Frameworks
+.next/
+.nuxt/
+out/
+.docusaurus/
+.vuepress/dist
