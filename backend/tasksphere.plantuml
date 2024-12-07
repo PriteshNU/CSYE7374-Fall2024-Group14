@@ -1,0 +1,707 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class ApiResponse {
+  - message: String
+  - serialVersionUID: long
+  - status: HttpStatus
+  - success: Boolean
+  + setSuccess(Boolean): void
+  + setStatus(HttpStatus): void
+  + setMessage(String): void
+  + getSuccess(): Boolean
+  + getMessage(): String
+  + getStatus(): HttpStatus
+}
+class ApplicationConfig {
+  - userRepository: UserRepository
+  + passwordEncoder(): PasswordEncoder
+  + userDetailsService(): UserDetailsService
+  + authenticationProvider(UserDetailsService, PasswordEncoder): AuthenticationProvider
+  + authenticationManager(AuthenticationConfiguration): AuthenticationManager
+}
+class AuthenticationController {
+  - authenticationService: AuthenticationService
+  + login(AuthenticationRequest): ResponseEntity<AuthenticationResponse>
+  + register(RegisterRequest): ResponseEntity<?>
+}
+class AuthenticationRequest {
+  - username: String
+  - password: String
+  + setUsername(String): void
+  + getPassword(): String
+  + setPassword(String): void
+  + getUsername(): String
+}
+class AuthenticationResponse {
+  - accessToken: String
+  + getAccessToken(): String
+  + setAccessToken(String): void
+}
+interface AuthenticationService << interface >> {
+  + register(RegisterRequest): ResponseEntity<?>
+  + login(AuthenticationRequest): ResponseEntity<AuthenticationResponse>
+}
+class AuthenticationServiceImpl {
+  - userRepository: UserRepository
+  - passwordEncoder: PasswordEncoder
+  - jwtService: JwtService
+  - authenticationManager: AuthenticationManager
+  + login(AuthenticationRequest): ResponseEntity<AuthenticationResponse>
+  + register(RegisterRequest): ResponseEntity<?>
+}
+class BadRequestException {
+  - apiResponse: ApiResponse
+  + getApiResponse(): ApiResponse
+}
+class Comment {
+  - id: Integer
+  - task: Task
+  - comment: String
+  - user: User
+  - createdAt: Date
+  + setTask(Task): void
+  + getTask(): Task
+  + getUser(): User
+  + getComment(): String
+  + getId(): Integer
+  + setId(Integer): void
+  + setCreatedAt(Date): void
+  + getCreatedAt(): Date
+  + setComment(String): void
+  + setUser(User): void
+  # onCreate(): void
+}
+class CommentController {
+  - commentService: CommentService
+  + addComment(CommentRequest): ResponseEntity<CommentDTO>
+  + deleteComment(Integer): ResponseEntity<ApiResponse>
+  + getAllComments(Integer, Integer): ResponseEntity<PagedResponse<CommentDTO>>
+}
+class CommentDTO {
+  - user: UserDTO
+  - id: Integer
+  - createdAt: Date
+  - comment: String
+  + getUser(): UserDTO
+  + getCreatedAt(): Date
+  + setCreatedAt(Date): void
+  + getComment(): String
+  + getId(): Integer
+  + setId(Integer): void
+  + setUser(UserDTO): void
+  + setComment(String): void
+}
+class CommentDtoFactory {
+  - instance: CommentDtoFactory
+  + getInstance(): CommentDtoFactory
+  + createCommentDto(Integer, String, Date): CommentDTO
+}
+enum CommentFactory << enumeration >> {
+  + INSTANCE: 
+  + valueOf(String): CommentFactory
+  + values(): CommentFactory[]
+  + createComment(User, Task, String): Comment
+}
+interface CommentRepository << interface >> {
+  + findByTaskIdAndUserId(Integer, Integer): List<Comment>
+}
+class CommentRequest {
+  - userId: Integer
+  - taskId: Integer
+  - comment: String
+  + getTaskId(): Integer
+  + getUserId(): Integer
+  + getComment(): String
+}
+interface CommentService << interface >> {
+  + getAllComments(int, int): ResponseEntity<PagedResponse<CommentDTO>>
+  + addComment(CommentRequest): ResponseEntity<CommentDTO>
+  + deleteComment(Integer): ResponseEntity<ApiResponse>
+}
+class CommentServiceImpl {
+  - taskRepository: TaskRepository
+  - commentRepository: CommentRepository
+  - userRepository: UserRepository
+  + getAllComments(int, int): ResponseEntity<PagedResponse<CommentDTO>>
+  + deleteComment(Integer): ResponseEntity<ApiResponse>
+  + addComment(CommentRequest): ResponseEntity<CommentDTO>
+  - mapToCommentDTO(Comment): CommentDTO
+}
+class CorsConfig {
+  - allowedHeaders: List<String>
+  - allowedMethods: List<String>
+  - expectedHeaders: List<String>
+  - allowedOrigins: List<String>
+  + corsConfigurationSource(): CorsConfigurationSource
+}
+class DelegatedAuthEntryPoint {
+  - handlerExceptionResolver: HandlerExceptionResolver
+  + commence(HttpServletRequest, HttpServletResponse, AuthenticationException): void
+}
+class JwtAuthenticationFilter {
+  - userDetailsService: UserDetailsService
+  - jwtService: JwtService
+  # doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+}
+class JwtService {
+  - jwtExpiration: long
+  - secretKey: String
+  + getSubject(String): String
+  + isTokenValid(String, UserDetails): boolean
+  + extractClaim(String, Function<Claims, T>): T
+  + generateToken(UserDetails): String
+  + generateToken(Map<String, Object>, UserDetails): String
+  - extractExpiration(String): Date
+  - isTokenExpired(String): boolean
+  - getSignInKey(): Key
+  - buildToken(Map<String, Object>, UserDetails, long): String
+  - extractAllClaims(String): Claims
+}
+class LastestCommentComparator {
+  + compare(Comment, Comment): int
+}
+class LogoutService {
+  + logout(HttpServletRequest, HttpServletResponse, Authentication): void
+}
+class OpenApiConfig
+class PagedResponse<T> {
+  - size: int
+  - last: boolean
+  - page: int
+  - totalPages: int
+  - totalElements: long
+  - data: List<T>
+  + getData(): List<T>
+  + isLast(): boolean
+  + getTotalPages(): int
+  + setTotalPages(int): void
+  + getPage(): int
+  + setData(List<T>): void
+  + getSize(): int
+  + setLast(boolean): void
+  + getTotalElements(): long
+  + setTotalElements(long): void
+  + setPage(int): void
+  + setSize(int): void
+}
+class Project {
+  - description: String
+  - createdAt: Date
+  - tasks: List<Task>
+  - id: Integer
+  - name: String
+  + getCreatedAt(): Date
+  + setName(String): void
+  + toString(): String
+  + setDescription(String): void
+  + setId(Integer): void
+  + equals(Object): boolean
+  + getDescription(): String
+  + getId(): Integer
+  + getName(): String
+  + setCreatedAt(Date): void
+  + getTasks(): List<Task>
+  # onCreate(): void
+}
+class ProjectController {
+  - projectService: ProjectService
+  - userProjectService: UserProjectService
+  + createProject(ProjectRequest): ResponseEntity<ProjectDTO>
+  + deleteProject(Integer): ResponseEntity<ApiResponse>
+  + getAllUsersByProject(Integer): ResponseEntity<List<UserDTO>>
+  + exportProject(): ResponseEntity<List<ProjectDTO>>
+  + getProject(Integer): ResponseEntity<ProjectDTO>
+  + importProject(File): ResponseEntity<List<ProjectDTO>>
+  + updateProject(ProjectRequest): ResponseEntity<ProjectDTO>
+  + getAllProjects(Integer, Integer, Integer): ResponseEntity<PagedResponse<ProjectDTO>>
+  + assignProject(ProjectRequest): ResponseEntity<ApiResponse>
+}
+class ProjectDTO {
+  - id: Integer
+  - name: String
+  - description: String
+  + getDescription(String): void
+  + getDescription(): String
+  + setId(Integer): void
+  + getId(): Integer
+  + getName(): String
+  + setName(String): void
+}
+enum ProjectDtoFactory << enumeration >> {
+  + INSTANCE: 
+  + createProjectDto(Integer, String, String): ProjectDTO
+  + values(): ProjectDtoFactory[]
+  + valueOf(String): ProjectDtoFactory
+}
+class ProjectFactory {
+  - instance: ProjectFactory
+  + getInstance(): ProjectFactory
+  + createProject(String, String): Project
+}
+interface ProjectRepository << interface >>
+class ProjectRequest {
+  - assigneeId: Integer
+  + getAssigneeId(): Integer
+  + setAssigneeId(Integer): void
+}
+interface ProjectService << interface >> {
+  + getAllProjects(int, int, Integer): ResponseEntity<PagedResponse<ProjectDTO>>
+  + getProject(Integer): ResponseEntity<ProjectDTO>
+  + createProject(ProjectRequest): ResponseEntity<ProjectDTO>
+  + deleteProject(Integer): ResponseEntity<ApiResponse>
+  + exportProject(): ResponseEntity<List<ProjectDTO>>
+  + updateProject(ProjectRequest): ResponseEntity<ProjectDTO>
+  + importProject(File): ResponseEntity<List<ProjectDTO>>
+}
+class ProjectServiceImpl {
+  - userProjectService: UserProjectService
+  - projectRepository: ProjectRepository
+  + updateProject(ProjectRequest): ResponseEntity<ProjectDTO>
+  + getProject(Integer): ResponseEntity<ProjectDTO>
+  + importProject(File): ResponseEntity<List<ProjectDTO>>
+  + getAllProjects(int, int, Integer): ResponseEntity<PagedResponse<ProjectDTO>>
+  + exportProject(): ResponseEntity<List<ProjectDTO>>
+  + deleteProject(Integer): ResponseEntity<ApiResponse>
+  + createProject(ProjectRequest): ResponseEntity<ProjectDTO>
+}
+class RegisterRequest {
+  - lastname: String
+  - password: String
+  - role: Role
+  - username: String
+  - firstname: String
+  + setPassword(String): void
+  + setUsername(String): void
+  + getLastname(): String
+  + setRole(Role): void
+  + setFirstname(String): void
+  + getFirstname(): String
+  + getUsername(): String
+  + getRole(): Role
+  + getPassword(): String
+  + setLastname(String): void
+}
+class ResourceNotFoundException {
+  - serialVersionUID: long
+  - resourceName: String
+  - apiResponse: ApiResponse
+  - fieldValue: Object
+  - fieldName: String
+  + getResourceName(): String
+  + getFieldName(): String
+  + getFieldValue(): Object
+  + getApiResponse(): ApiResponse
+  - setApiResponse(): void
+}
+class RestControllerExceptionHandler {
+  + resolveException(UnauthorizedException): ResponseEntity<ApiResponse>
+  + resolveException(ResourceNotFoundException): ResponseEntity<ApiResponse>
+  + resolveException(BadRequestException): ResponseEntity<ApiResponse>
+}
+enum Role << enumeration >> {
+  + Admin: 
+  + Manager: 
+  + TechLead: 
+  + Tester: 
+  + Developer: 
+  + values(): Role[]
+  + valueOf(String): Role
+}
+class SecurityFilterChainConfig {
+  - authenticationEntryPoint: AuthenticationEntryPoint
+  - logoutHandler: LogoutHandler
+  - jwtAuthenticationFilter: JwtAuthenticationFilter
+  - authenticationProvider: AuthenticationProvider
+  + securityFilterChain(HttpSecurity): SecurityFilterChain
+}
+class Task {
+  + assignee: User
+  - status: TaskStatus
+  - priority: TaskPriority
+  - project: Project
+  - description: String
+  - id: Integer
+  - createdAt: Date
+  - name: String
+  - deadline: Date
+  - comments: List<Comment>
+  + getComments(): List<Comment>
+  + getAssignee(): User
+  + setStatus(TaskStatus): void
+  + setPriority(TaskPriority): void
+  + getDeadline(): Date
+  + getProject(): Project
+  + setCreatedAt(Date): void
+  + getCreatedAt(): Date
+  + setDescription(String): void
+  + getName(): String
+  + compareTo(Task): int
+  + getDescription(): String
+  + setId(Integer): void
+  + toString(): String
+  + setAssignee(): void
+  + getPriority(): TaskPriority
+  + getId(): Integer
+  + getStatus(): TaskStatus
+  + setName(String): void
+  + setAssignee(User): void
+  + setDeadline(Date): void
+  # onCreate(): void
+}
+class TaskController {
+  - taskService: TaskService
+  + assignTask(TaskRequest): ResponseEntity<ApiResponse>
+  + changeTaskStatus(TaskRequest): ResponseEntity<ApiResponse>
+  + getAllTasks(Integer, Integer, Integer, Integer, TaskPriority, TaskStatus): ResponseEntity<PagedResponse<TaskDTO>>
+  + createTask(TaskRequest): ResponseEntity<TaskDTO>
+  + deleteTask(Integer): ResponseEntity<ApiResponse>
+  + changeTaskPriority(TaskRequest): ResponseEntity<ApiResponse>
+  + getTaskDetail(Integer): ResponseEntity<TaskDTO>
+  + updateTask(TaskRequest): ResponseEntity<TaskDTO>
+}
+class TaskDTO {
+  - deadline: Date
+  - assignee: UserDTO
+  - name: String
+  - comments: List<CommentDTO>
+  - id: Integer
+  - description: String
+  - priority: TaskPriority
+  - status: TaskStatus
+  + setDescription(String): void
+  + getStatus(): TaskStatus
+  + getId(): Integer
+  + setPriority(TaskPriority): void
+  + getName(): String
+  + setDeadline(Date): void
+  + setComments(List<CommentDTO>): void
+  + getAssignee(): UserDTO
+  + setStatus(TaskStatus): void
+  + getDeadline(): Date
+  + setAssignee(UserDTO): void
+  + getDescription(): String
+  + getPriority(): TaskPriority
+  + setName(String): void
+  + setId(Integer): void
+  + getComments(): List<CommentDTO>
+}
+class TaskDtoFactory {
+  - instance: TaskDtoFactory
+  + getInstance(): TaskDtoFactory
+  + createTaskDto(Integer, String, String, Date, TaskPriority, TaskStatus): TaskDTO
+}
+enum TaskPriority << enumeration >> {
+  + Low: 
+  + Lowest: 
+  + High: 
+  + Highest: 
+  + Medium: 
+  - priority: int
+  + valueOf(String): TaskPriority
+  + values(): TaskPriority[]
+  + getPriority(): int
+}
+interface TaskRepository << interface >> {
+  + findByAssigneeIdAndProjectId(Integer, Integer, Pageable): Page<Task>
+  + findByAssigneeId(Integer, Pageable): Page<Task>
+  + findByProjectId(Integer, Pageable): Page<Task>
+}
+class TaskRequest {
+  - projectId: Integer
+  - assigneeId: Integer
+  + setProjectId(Integer): void
+  + getAssigneeId(): Integer
+  + setAssigneeId(Integer): void
+  + getProjectId(): Integer
+}
+interface TaskService << interface >> {
+  + changeTaskPriority(TaskRequest): ResponseEntity<ApiResponse>
+  + deleteTask(Integer): ResponseEntity<ApiResponse>
+  + createTask(TaskRequest): ResponseEntity<TaskDTO>
+  + changeTaskStatus(TaskRequest): ResponseEntity<ApiResponse>
+  + updateTask(TaskRequest): ResponseEntity<TaskDTO>
+  + assignTask(TaskRequest): ResponseEntity<ApiResponse>
+  + getTaskDetail(Integer): ResponseEntity<TaskDTO>
+  + getAllTasks(int, int, Integer, Integer, TaskPriority, TaskStatus): ResponseEntity<PagedResponse<TaskDTO>>
+}
+class TaskServiceImpl {
+  - userRepository: UserRepository
+  - projectRepository: ProjectRepository
+  - taskRepository: TaskRepository
+  + changeTaskStatus(TaskRequest): ResponseEntity<ApiResponse>
+  + getTaskDetail(Integer): ResponseEntity<TaskDTO>
+  + updateTask(TaskRequest): ResponseEntity<TaskDTO>
+  + assignTask(TaskRequest): ResponseEntity<ApiResponse>
+  + changeTaskPriority(TaskRequest): ResponseEntity<ApiResponse>
+  + createTask(TaskRequest): ResponseEntity<TaskDTO>
+  + deleteTask(Integer): ResponseEntity<ApiResponse>
+  + getAllTasks(int, int, Integer, Integer, TaskPriority, TaskStatus): ResponseEntity<PagedResponse<TaskDTO>>
+  - mapToTaskDTO(Task): TaskDTO
+  - mapToCommentDTO(Comment): CommentDTO
+}
+class TaskSphereApplication {
+  + main(String[]): void
+}
+enum TaskStatus << enumeration >> {
+  + OnHold: 
+  + Open: 
+  + Cancelled: 
+  + Done: 
+  + InProgress: 
+  + Rejected: 
+  + InReview: 
+  - description: String
+  + getDescription(): String
+  + values(): TaskStatus[]
+  + valueOf(String): TaskStatus
+}
+class Token {
+  + revoked: boolean
+  + id: Integer
+  + user: User
+  + expired: boolean
+  + tokenType: String
+  + token: String
+  + isExpired(): boolean
+  + getToken(): String
+  + equals(Object): boolean
+  + isRevoked(): boolean
+  + setToken(String): void
+  + getId(): Integer
+  + setRevoked(boolean): void
+  + setExpired(boolean): void
+  + setId(Integer): void
+  + setUser(User): void
+  + getTokenType(): String
+  + getUser(): User
+  + setTokenType(String): void
+}
+class UnauthorizedException {
+  - message: String
+  - apiResponse: ApiResponse
+  + setApiResponse(ApiResponse): void
+  + setMessage(String): void
+  + getMessage(): String
+  + getApiResponse(): ApiResponse
+  - setApiResponse(): void
+}
+class User {
+  - tasks: List<Task>
+  - firstname: String
+  - role: Role
+  - id: Integer
+  - comments: List<Comment>
+  - lastname: String
+  - username: String
+  - password: String
+  + getLastname(): String
+  + getFirstname(): String
+  + getTasks(): List<Task>
+  + isAccountNonExpired(): boolean
+  + setId(Integer): void
+  + getComments(): List<Comment>
+  + setUsername(String): void
+  + getRole(): Role
+  + getUsername(): String
+  + getPassword(): String
+  + getAuthorities(): Collection<GrantedAuthority>
+  + setLastname(String): void
+  + setPassword(String): void
+  + isAccountNonLocked(): boolean
+  + equals(Object): boolean
+  + getId(): Integer
+  + setRole(Role): void
+  + toString(): String
+  + isEnabled(): boolean
+  + setFirstname(String): void
+  + isCredentialsNonExpired(): boolean
+}
+class UserController {
+  - userService: UserService
+  + updateUserProfile(UserRequest): ResponseEntity<ApiResponse>
+  + getUserProfile(String): ResponseEntity<UserDTO>
+  + deleteUser(Integer): ResponseEntity<ApiResponse>
+  + changeUserRole(UserRequest): ResponseEntity<ApiResponse>
+}
+class UserDTO {
+  - username: String
+  - firstname: String
+  - id: Integer
+  - lastname: String
+  - role: Role
+  + getId(): Integer
+  + setUsername(String): void
+  + setFirstname(String): void
+  + getFirstname(): String
+  + getLastname(): String
+  + getRole(): Role
+  + getUsername(): String
+  + setLastname(String): void
+  + setId(Integer): void
+  + setRole(Role): void
+}
+class UserDtoFactory {
+  - instance: UserDtoFactory
+  + getInstance(): UserDtoFactory
+  + createUserDTO(Integer, String, String, String, Role): UserDTO
+}
+class UserProject {
+  - project: Project
+  - id: UserProjectId
+  - user: User
+  + getUser(): User
+  + getProject(): Project
+  + setProject(Project): void
+  + toString(): String
+  + setUser(User): void
+}
+class UserProjectFactory {
+  - instance: UserProjectFactory
+  + createUserProject(User, Project): UserProject
+  + getInstance(): UserProjectFactory
+}
+class UserProjectId {
+  - userId: Integer
+  - projectId: Integer
+  + toString(): String
+  + getProjectId(): Integer
+  + setProjectId(Integer): void
+  + setUserId(Integer): void
+  + getUserId(): Integer
+}
+interface UserProjectRepository << interface >> {
+  + findByUserId(Integer): List<UserProject>
+  + findByProjectId(Integer): List<UserProject>
+}
+interface UserProjectService << interface >> {
+  + getAllUsersByProject(Integer): ResponseEntity<List<UserDTO>>
+  + assignProject(ProjectRequest): ResponseEntity<ApiResponse>
+  + getAllProjectsByUser(Integer): List<ProjectDTO>
+}
+class UserProjectServiceImpl {
+  - projectRepository: ProjectRepository
+  - userProjectRepository: UserProjectRepository
+  - userRepository: UserRepository
+  + assignProject(ProjectRequest): ResponseEntity<ApiResponse>
+  + getAllUsersByProject(Integer): ResponseEntity<List<UserDTO>>
+  + getAllProjectsByUser(Integer): List<ProjectDTO>
+}
+interface UserRepository << interface >> {
+  + existsByUsername(String): Boolean
+  + findByUsername(String): Optional<User>
+}
+class UserRequest
+interface UserService << interface >> {
+  + updateUserProfile(UserRequest): ResponseEntity<ApiResponse>
+  + deleteUser(Integer): ResponseEntity<ApiResponse>
+  + changeUserRole(UserRequest): ResponseEntity<ApiResponse>
+  + getUserProfile(String): ResponseEntity<UserDTO>
+}
+class UserServiceImpl {
+  - userRepository: UserRepository
+  + getUserProfile(String): ResponseEntity<UserDTO>
+  + deleteUser(Integer): ResponseEntity<ApiResponse>
+  + changeUserRole(UserRequest): ResponseEntity<ApiResponse>
+  + updateUserProfile(UserRequest): ResponseEntity<ApiResponse>
+}
+
+ApplicationConfig              "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+AuthenticationController       "1" *-[#595959,plain]-> "authenticationService\n1" AuthenticationService          
+AuthenticationServiceImpl       -[#595959,dashed]->  ApiResponse                    : "«create»"
+AuthenticationServiceImpl       -[#595959,dashed]->  AuthenticationResponse         : "«create»"
+AuthenticationServiceImpl       -[#008200,dashed]-^  AuthenticationService          
+AuthenticationServiceImpl      "1" *-[#595959,plain]-> "jwtService\n1" JwtService                     
+AuthenticationServiceImpl       -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+AuthenticationServiceImpl       -[#595959,dashed]->  User                           : "«create»"
+AuthenticationServiceImpl      "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+BadRequestException            "1" *-[#595959,plain]-> "apiResponse\n1" ApiResponse                    
+Comment                        "1" *-[#595959,plain]-> "task\n1" Task                           
+Comment                        "1" *-[#595959,plain]-> "user\n1" User                           
+CommentController              "1" *-[#595959,plain]-> "commentService\n1" CommentService                 
+CommentDTO                     "1" *-[#595959,plain]-> "user\n1" UserDTO                        
+CommentDtoFactory               -[#595959,dashed]->  CommentDTO                     : "«create»"
+CommentFactory                  -[#595959,dashed]->  Comment                        : "«create»"
+CommentServiceImpl              -[#595959,dashed]->  ApiResponse                    : "«create»"
+CommentServiceImpl              -[#595959,dashed]->  CommentDTO                     : "«create»"
+CommentServiceImpl             "1" *-[#595959,plain]-> "commentRepository\n1" CommentRepository              
+CommentServiceImpl              -[#008200,dashed]-^  CommentService                 
+CommentServiceImpl              -[#595959,dashed]->  LastestCommentComparator       : "«create»"
+CommentServiceImpl              -[#595959,dashed]->  PagedResponse                  : "«create»"
+CommentServiceImpl              -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+CommentServiceImpl             "1" *-[#595959,plain]-> "taskRepository\n1" TaskRepository                 
+CommentServiceImpl              -[#595959,dashed]->  UserDTO                        : "«create»"
+CommentServiceImpl             "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+JwtAuthenticationFilter        "1" *-[#595959,plain]-> "jwtService\n1" JwtService                     
+LastestCommentComparator        +-[#820000,plain]-  Comment                        
+Project                        "1" *-[#595959,plain]-> "tasks\n*" Task                           
+ProjectController              "1" *-[#595959,plain]-> "projectService\n1" ProjectService                 
+ProjectController              "1" *-[#595959,plain]-> "userProjectService\n1" UserProjectService             
+ProjectDtoFactory               -[#595959,dashed]->  ProjectDTO                     : "«create»"
+ProjectFactory                  -[#595959,dashed]->  Project                        : "«create»"
+ProjectRequest                  -[#000082,plain]-^  ProjectDTO                     
+ProjectServiceImpl              -[#595959,dashed]->  ApiResponse                    : "«create»"
+ProjectServiceImpl              -[#595959,dashed]->  PagedResponse                  : "«create»"
+ProjectServiceImpl              -[#595959,dashed]->  ProjectDTO                     : "«create»"
+ProjectServiceImpl             "1" *-[#595959,plain]-> "projectRepository\n1" ProjectRepository              
+ProjectServiceImpl              -[#008200,dashed]-^  ProjectService                 
+ProjectServiceImpl              -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+ProjectServiceImpl             "1" *-[#595959,plain]-> "userProjectService\n1" UserProjectService             
+RegisterRequest                "1" *-[#595959,plain]-> "role\n1" Role                           
+ResourceNotFoundException       -[#595959,dashed]->  ApiResponse                    : "«create»"
+ResourceNotFoundException      "1" *-[#595959,plain]-> "apiResponse\n1" ApiResponse                    
+SecurityFilterChainConfig      "1" *-[#595959,plain]-> "jwtAuthenticationFilter\n1" JwtAuthenticationFilter        
+Task                           "1" *-[#595959,plain]-> "comments\n*" Comment                        
+Task                           "1" *-[#595959,plain]-> "project\n1" Project                        
+Task                           "1" *-[#595959,plain]-> "priority\n1" TaskPriority                   
+Task                           "1" *-[#595959,plain]-> "status\n1" TaskStatus                     
+Task                           "1" *-[#595959,plain]-> "assignee\n1" User                           
+TaskController                 "1" *-[#595959,plain]-> "taskService\n1" TaskService                    
+TaskDTO                        "1" *-[#595959,plain]-> "comments\n*" CommentDTO                     
+TaskDTO                        "1" *-[#595959,plain]-> "priority\n1" TaskPriority                   
+TaskDTO                        "1" *-[#595959,plain]-> "status\n1" TaskStatus                     
+TaskDTO                        "1" *-[#595959,plain]-> "assignee\n1" UserDTO                        
+TaskDtoFactory                  -[#595959,dashed]->  TaskDTO                        : "«create»"
+TaskRequest                     -[#000082,plain]-^  TaskDTO                        
+TaskServiceImpl                 -[#595959,dashed]->  ApiResponse                    : "«create»"
+TaskServiceImpl                 -[#595959,dashed]->  CommentDTO                     : "«create»"
+TaskServiceImpl                 -[#595959,dashed]->  PagedResponse                  : "«create»"
+TaskServiceImpl                "1" *-[#595959,plain]-> "projectRepository\n1" ProjectRepository              
+TaskServiceImpl                 -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+TaskServiceImpl                 -[#595959,dashed]->  Task                           : "«create»"
+TaskServiceImpl                "1" *-[#595959,plain]-> "taskRepository\n1" TaskRepository                 
+TaskServiceImpl                 -[#008200,dashed]-^  TaskService                    
+TaskServiceImpl                 -[#595959,dashed]->  UserDTO                        : "«create»"
+TaskServiceImpl                "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+Token                          "1" *-[#595959,plain]-> "user\n1" User                           
+UnauthorizedException          "1" *-[#595959,plain]-> "apiResponse\n1" ApiResponse                    
+UnauthorizedException           -[#595959,dashed]->  ApiResponse                    : "«create»"
+User                           "1" *-[#595959,plain]-> "comments\n*" Comment                        
+User                           "1" *-[#595959,plain]-> "role\n1" Role                           
+User                           "1" *-[#595959,plain]-> "tasks\n*" Task                           
+UserController                 "1" *-[#595959,plain]-> "userService\n1" UserService                    
+UserDTO                        "1" *-[#595959,plain]-> "role\n1" Role                           
+UserDtoFactory                  -[#595959,dashed]->  UserDTO                        : "«create»"
+UserProject                    "1" *-[#595959,plain]-> "project\n1" Project                        
+UserProject                    "1" *-[#595959,plain]-> "user\n1" User                           
+UserProject                     -[#595959,dashed]->  UserProjectId                  : "«create»"
+UserProject                    "1" *-[#595959,plain]-> "id\n1" UserProjectId                  
+UserProjectFactory              -[#595959,dashed]->  UserProject                    : "«create»"
+UserProjectId                   +-[#820000,plain]-  UserProject                    
+UserProjectServiceImpl          -[#595959,dashed]->  ApiResponse                    : "«create»"
+UserProjectServiceImpl          -[#595959,dashed]->  ProjectDTO                     : "«create»"
+UserProjectServiceImpl         "1" *-[#595959,plain]-> "projectRepository\n1" ProjectRepository              
+UserProjectServiceImpl          -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+UserProjectServiceImpl          -[#595959,dashed]->  UserDTO                        : "«create»"
+UserProjectServiceImpl         "1" *-[#595959,plain]-> "userProjectRepository\n1" UserProjectRepository          
+UserProjectServiceImpl          -[#008200,dashed]-^  UserProjectService             
+UserProjectServiceImpl         "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+UserRequest                     -[#000082,plain]-^  UserDTO                        
+UserServiceImpl                 -[#595959,dashed]->  ApiResponse                    : "«create»"
+UserServiceImpl                 -[#595959,dashed]->  ResourceNotFoundException      : "«create»"
+UserServiceImpl                "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                 
+UserServiceImpl                 -[#008200,dashed]-^  UserService                    
+@enduml

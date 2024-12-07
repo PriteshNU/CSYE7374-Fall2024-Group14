@@ -1,0 +1,51 @@
+.createProject-form {
+  border: 1px solid black;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 2rem auto; /* Centers the form and adds responsive margin */
+  max-width: 800px; /* Prevents the form from stretching too far */
+}
+
+.createProject-form .projectForm-OR {
+  text-align: center;
+  justify-content: center;
+  font-weight: bolder;
+}
+
+.createProject-form .projectForm-title {
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.createProject-form .projectForm-CSV {
+  border: dotted;
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: center; /* Center the content for smaller screens */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .createProject-form {
+    padding: 1rem;
+    margin: 1rem; /* Reduce padding and margin on smaller screens */
+  }
+  
+  .createProject-form .projectForm-CSV {
+    padding: 1rem; /* Adjust padding */
+  }
+}
+
+@media (max-width: 576px) {
+  .createProject-form {
+    margin: 0.5rem;
+    padding: 0.5rem; /* Even smaller padding and margin for mobile screens */
+  }
+  
+  /* Make input and button stack on small screens */
+  .createProject-form .projectForm-CSV input,
+  .createProject-form .projectForm-CSV button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,22 +1,26 @@
 spring:
-  application:
-    name: knowledgeforge
+  datasource:
+    url: jdbc:postgresql://cyse7374-do-user-15791858-0.m.db.ondigitalocean.com:25060/tasksphere?sslmode=require
+    username: doadmin
+    password: AVNS_mBzxzKrRdJ8OdbseJF8
+    dbcp2:
+      test-while-idle: true
+      validation-query: select 1
+  jpa:
+    hibernate:
+       ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+application:
   security:
-    user:
-      name: admin
-      password: admin
-
-  data:
-    mongodb:
-      uri: mongodb+srv://admin:admin@cluster0.cn5cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      database: lms
-
-#application:
-#  security:
-#    jwt:
-#      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-#      expiration: 86400000 # a day
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
 
 cors:
   allowed-origins: "*"

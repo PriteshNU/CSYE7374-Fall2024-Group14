@@ -1,0 +1,11 @@
+.tasklist-container {
+  background-color: white;
+  height: 40vh;
+  padding: 0%;
+  margin: 0%;
+  display: flex;
+  flex-direction: column;
+}
+.tasklist-container .custom-ag-grid {
+  border-radius: 1rem;
+}/*# sourceMappingURL=TaskList.css.map */

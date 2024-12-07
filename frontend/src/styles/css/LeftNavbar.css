@@ -1,0 +1,32 @@
+.vertical-navbar {
+  padding: 1rem;
+  margin: 0%;
+  background-color: black;
+  width: 20vw;
+  height: 100%;
+}
+
+.vertical-navbar .profile-container {
+  background-color: white;
+  height: 8rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.vertical-navbar .profile-container h5 {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.vertical-navbar .profile-container h6 {
+  font-size: medium;
+  font-style: italic;
+}
+
+.vertical-navbar .action-buttons-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,23 @@
+.signUp-main {
+  background-image: url("../../assets/whiteBackground.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
+  padding: 5rem;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+.signUp-main .signUp-title {
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(220, 2, 2, 0.2);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.signUp-main .signUp-form {
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.7);
+}/*# sourceMappingURL=SignUp.css.map */

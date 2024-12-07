@@ -1,0 +1,61 @@
+.assignProjectForm {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 0.1rem solid black;
+  max-width: 800px; /* Adjust based on your layout */
+  margin: 2rem auto; /* This will center the form on the page */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.assignProjectForm .assignProjectForm-title {
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+/* Use percentages for responsive spacing */
+.assignProjectForm .form-control,
+.assignProjectForm .form-select {
+  margin-bottom: 1rem; /* Spacing between form items */
+}
+
+/* Adjust button size based on screen size */
+.assignProjectForm .btn-lg {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.assignProjectForm div.Buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .assignProjectForm {
+    padding: 1rem;
+    margin: 1rem;
+    width: auto; /* Allow the form to be responsive */
+  }
+
+  .assignProjectForm div.Buttons {
+    flex-direction: column; /* Stack buttons vertically on smaller screens */
+  }
+
+  .assignProjectForm div.Buttons .btn {
+    width: 100%;
+    margin-bottom: 0.5rem; /* Add space between stacked buttons */
+  }
+}
+
+@media (max-width: 576px) {
+  .assignProjectForm {
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
+
+  .assignProjectForm div.Buttons {
+    width: 100%; /* Full width on small screens */
+  }
+}

@@ -1,0 +1,34 @@
+.formBackground{
+    position: absolute;
+    top: 10%;
+    right:20%;
+    display: block;
+    background-color: white;
+    width: 50%;
+    padding: 3rem;
+    height: fit-content;
+    border-radius: 1rem;
+    border-style: solid;
+    border-width: 0.1rem;
+    border-color: black;
+    
+    div.Buttons{
+        display: flex;
+        margin: 3rem auto 0 auto;
+        justify-content: space-between;
+        width: 40%;
+        height: fit-content;
+    }
+
+    div.DatePicker{
+        display: flex;
+        width: 40%;
+        justify-content: space-between;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label{
+        font-weight: 500;
+    }
+}
