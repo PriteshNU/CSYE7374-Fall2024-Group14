@@ -172,8 +172,31 @@ public class TaskServiceImpl implements TaskService {
     public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
         Task task = taskRepository.findById(request.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
+        System.out.println("Current State: " + task.getState().getClass().getSimpleName());
+        switch (request.getStatus()) {
+            case InProgress:
+                task.start();
+                break;
+            case InReview:
+                task.review();
+                break;
+            case Done:
+                task.complete();
+                break;
+            case Cancelled:
+                task.cancel();
+                break;
+            case Rejected:
+                task.reject();
+                break;
+            case OnHold:
+                task.hold();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid task status");
+        }
 
-        task.setStatus(request.getStatus());
+//        task.setStatus(request.getStatus());
         taskRepository.save(task);
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task status changed successfully"));
