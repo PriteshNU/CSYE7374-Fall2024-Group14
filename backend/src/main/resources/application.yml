@@ -10,11 +10,24 @@ spring:
     hibernate:
        ddl-auto: update
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
     database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: smtp.mailgun.org
+    port: 587
+    username: postmaster@sandbox8f8b21174b35486ea2dcb63ce40b26b7.mailgun.org
+    password: c1a8ad192805bf32c44b9e22cca8cf9c-309b0ef4-64d342d3
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 application:
   security:

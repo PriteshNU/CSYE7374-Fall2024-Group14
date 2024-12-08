@@ -1,5 +1,7 @@
 package com.neu.tasksphere.service;
 
+import com.neu.tasksphere.designpatterns.factory.ProjectDTOFactory;
+import com.neu.tasksphere.designpatterns.factory.UserDTOFactory;
 import com.neu.tasksphere.entity.Project;
 import com.neu.tasksphere.entity.User;
 import com.neu.tasksphere.entity.UserProject;
@@ -12,6 +14,7 @@ import com.neu.tasksphere.model.payload.response.ApiResponse;
 import com.neu.tasksphere.repository.ProjectRepository;
 import com.neu.tasksphere.repository.UserProjectRepository;
 import com.neu.tasksphere.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -52,15 +55,7 @@ public class UserProjectServiceImpl implements UserProjectService {
         List<UserProject> usersOfProject = userProjectRepository.findByProjectId(projectId);
 
         List<UserDTO> userDTOList = usersOfProject.stream()
-                .map((userProject) -> {
-                    User user = userProject.getUser();
-                    UserDTO userDTO = new UserDTO();
-                    userDTO.setId(user.getId());
-                    userDTO.setUsername(user.getUsername());
-                    userDTO.setFirstname(user.getFirstname());
-                    userDTO.setLastname(user.getLastname());
-                    return userDTO;
-                })
+                .map((userProject) -> UserDTOFactory.getInstance().getObject(userProject.getUser()))
                 .toList();
 
         return ResponseEntity.ok(userDTOList);
@@ -70,17 +65,8 @@ public class UserProjectServiceImpl implements UserProjectService {
 
         List<UserProject> usersOfProject = userProjectRepository.findByUserId(userId);
 
-        List<ProjectDTO> projectDTOList = usersOfProject.stream()
-                .map((userProject) -> {
-                    Project project = userProject.getProject();
-                    ProjectDTO projectDTO = new ProjectDTO();
-                    projectDTO.setId(project.getId());
-                    projectDTO.getDescription(project.getDescription());
-                    projectDTO.setName(project.getName());
-                    return projectDTO;
-                })
+        return usersOfProject.stream()
+                .map((userProject) -> ProjectDTOFactory.INSTANCE.getObject(userProject.getProject()))
                 .toList();
-
-        return projectDTOList;
     }
 }

@@ -1,18 +1,11 @@
 package com.neu.tasksphere.service;
 
-import com.neu.tasksphere.entity.Comment;
-import com.neu.tasksphere.entity.Task;
+import com.neu.tasksphere.designpatterns.factory.UserDTOFactory;
 import com.neu.tasksphere.entity.User;
-import com.neu.tasksphere.entity.enums.TaskPriority;
-import com.neu.tasksphere.entity.enums.TaskStatus;
 import com.neu.tasksphere.exception.ResourceNotFoundException;
-import com.neu.tasksphere.model.CommentDTO;
-import com.neu.tasksphere.model.TaskDTO;
 import com.neu.tasksphere.model.UserDTO;
-import com.neu.tasksphere.model.factory.UserDtoFactory;
 import com.neu.tasksphere.model.payload.request.UserRequest;
 import com.neu.tasksphere.model.payload.response.ApiResponse;
-import com.neu.tasksphere.model.payload.response.PagedResponse;
 import com.neu.tasksphere.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,14 +29,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "Username", username));
 
-        UserDtoFactory userDtoFactory = UserDtoFactory.getInstance();
-        UserDTO userDTO = userDtoFactory.createUserDTO(user.getId(),
-                user.getUsername(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getRole());
-
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(mapToUserDTO(user));
     }
 
     public ResponseEntity<ApiResponse> updateUserProfile(UserRequest request) {
@@ -88,11 +74,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDTO mapToUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
-        userDTO.setFirstname(user.getFirstname());
-        userDTO.setLastname(user.getLastname());
-        return userDTO;
+        return UserDTOFactory.getInstance().getObject(user);
     }
 }

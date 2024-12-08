@@ -73,6 +73,7 @@ public class Project {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

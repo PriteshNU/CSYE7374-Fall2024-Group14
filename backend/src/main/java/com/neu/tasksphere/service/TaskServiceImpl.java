@@ -1,16 +1,18 @@
 package com.neu.tasksphere.service;
 
-import com.neu.tasksphere.entity.Comment;
+import com.neu.tasksphere.designpatterns.builder.TaskBuilder;
+import com.neu.tasksphere.designpatterns.factory.TaskDTOFactory;
+import com.neu.tasksphere.designpatterns.strategy.TaskFilteringStrategy;
+import com.neu.tasksphere.designpatterns.strategy.TaskSortingStrategy;
+import com.neu.tasksphere.designpatterns.strategy.TaskStrategyResolver;
 import com.neu.tasksphere.entity.Project;
 import com.neu.tasksphere.entity.Task;
+import com.neu.tasksphere.entity.TaskEvent;
 import com.neu.tasksphere.entity.User;
 import com.neu.tasksphere.entity.enums.TaskPriority;
 import com.neu.tasksphere.entity.enums.TaskStatus;
 import com.neu.tasksphere.exception.ResourceNotFoundException;
-import com.neu.tasksphere.model.CommentDTO;
 import com.neu.tasksphere.model.TaskDTO;
-import com.neu.tasksphere.model.UserDTO;
-import com.neu.tasksphere.model.factory.TaskDtoFactory;
 import com.neu.tasksphere.model.payload.request.TaskRequest;
 import com.neu.tasksphere.model.payload.response.ApiResponse;
 import com.neu.tasksphere.model.payload.response.PagedResponse;
@@ -20,7 +22,6 @@ import com.neu.tasksphere.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +35,20 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
+    private final TaskStrategyResolver taskStrategyResolver;
+    private final TaskNotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ProjectRepository projectRepository) {
+    public TaskServiceImpl(
+            TaskRepository taskRepository,
+            UserRepository userRepository,
+            ProjectRepository projectRepository,
+            TaskStrategyResolver taskStrategyResolver,
+            TaskNotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
+        this.taskStrategyResolver = taskStrategyResolver;
+        this.notificationService = notificationService;
     }
 
     public ResponseEntity<TaskDTO> getTaskDetail(Integer id) {
@@ -51,7 +61,8 @@ public class TaskServiceImpl implements TaskService {
     public ResponseEntity<PagedResponse<TaskDTO>> getAllTasks(
             int page, int size,
             Integer userId, Integer projectId,
-            TaskPriority priority, TaskStatus status) {
+            TaskPriority priority, TaskStatus status,
+            String sortBy, String filterBy) {
 
         Page<Task> tasks;
         Pageable pageable = PageRequest.of(page, size);
@@ -67,15 +78,21 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Stream<Task> taskStream = tasks.stream();
-        if (status != null) {
-            taskStream = taskStream.filter(task -> task.getStatus().equals(status));
-        }
-        if (priority != null) {
-            taskStream = taskStream.filter(task -> task.getPriority().equals(priority));
+
+        // Apply filtering
+        if (filterBy != null && !filterBy.isEmpty()) {
+            TaskFilteringStrategy filteringStrategy = taskStrategyResolver.getFilteringStrategy(filterBy, status, priority);
+            taskStream = filteringStrategy.filterTasks(taskStream);
         }
 
+        // Apply sorting
+        if (sortBy != null && !sortBy.isEmpty()) {
+            TaskSortingStrategy sortingStrategy = taskStrategyResolver.getSortingStrategy(sortBy);
+            taskStream = sortingStrategy.sortTasks(taskStream);
+        }
+
+        // Convert to DTOs
         List<TaskDTO> taskDTOList = taskStream
-                .sorted()
                 .map(this::mapToTaskDTO)
                 .collect(Collectors.toList());
 
@@ -90,27 +107,30 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public ResponseEntity<TaskDTO> createTask(TaskRequest request) {
-
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "ID", request.getProjectId()));
 
-        Task task = new Task(
-                request.getName(),
-                request.getDescription(),
-                request.getDeadline(),
-                request.getPriority(),
-                request.getStatus(),
-                project
-        );
-
+        //Fetch the assignee if provided
+        User assignee = null;
         if (request.getAssigneeId() > 0) {
-            User user = userRepository.findById(request.getAssigneeId())
+            assignee = userRepository.findById(request.getAssigneeId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", "ID", request.getAssigneeId()));
-
-            task.setAssignee(user);
         }
 
+        Task task = new TaskBuilder()
+                .setName(request.getName())
+                .setDescription(request.getDescription())
+                .setDeadline(request.getDeadline())
+                .setPriority(request.getPriority())
+                .setStatus(request.getStatus())
+                .setProject(project)
+                .setAssignee(assignee)
+                .build();
+
         taskRepository.save(task);
+
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskCreated"));
 
         return ResponseEntity.ok(mapToTaskDTO(task));
     }
@@ -118,6 +138,8 @@ public class TaskServiceImpl implements TaskService {
     public ResponseEntity<TaskDTO> updateTask(TaskRequest request) {
         Task task = taskRepository.findById(request.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
+
+        boolean isDeadlineUpdated = request.getDeadline() != null && request.getDeadline() != task.getDeadline();
 
         task.setName(request.getName());
         task.setDescription(request.getDescription());
@@ -134,6 +156,13 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskUpdated"));
+
+        if (isDeadlineUpdated) {
+            notificationService.notifyObservers(new TaskEvent(task, "TaskDeadlineUpdated"));
+        }
+
         return ResponseEntity.ok(mapToTaskDTO(task));
     }
 
@@ -142,6 +171,9 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", id));
 
         taskRepository.delete(task);
+
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskDeleted"));
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task deleted successfully"));
     }
@@ -156,6 +188,9 @@ public class TaskServiceImpl implements TaskService {
         task.setAssignee(user);
         taskRepository.save(task);
 
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskAssigned"));
+
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task assigned to user successfully"));
     }
 
@@ -165,6 +200,9 @@ public class TaskServiceImpl implements TaskService {
 
         task.setPriority(request.getPriority());
         taskRepository.save(task);
+
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskPriorityChanged"));
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task priority changed successfully"));
     }
@@ -176,54 +214,13 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(request.getStatus());
         taskRepository.save(task);
 
+        // Notify observers
+        notificationService.notifyObservers(new TaskEvent(task, "TaskStatusChanged"));
+
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task status changed successfully"));
     }
 
     private TaskDTO mapToTaskDTO(Task task) {
-
-        TaskDtoFactory taskDtoFactory = TaskDtoFactory.getInstance();
-        TaskDTO taskDTO = taskDtoFactory.createTaskDto(
-                task.getId(),
-                task.getName(),
-                task.getDescription(),
-                task.getDeadline(),
-                task.getPriority(),
-                task.getStatus()
-        );
-
-
-        if (task.getAssignee() != null) {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(task.getAssignee().getId());
-            userDTO.setFirstname(task.getAssignee().getFirstname());
-            userDTO.setLastname(task.getAssignee().getLastname());
-            taskDTO.setAssignee(userDTO);
-        }
-
-        if (task.getComments() != null) {
-            List<CommentDTO> commentDTOList = task.getComments().stream()
-                    .map(this::mapToCommentDTO)
-                    .collect(Collectors.toList());
-
-            taskDTO.setComments(commentDTOList);
-        }
-
-        return taskDTO;
-    }
-
-    private CommentDTO mapToCommentDTO(Comment comment) {
-        CommentDTO commentDTO = new CommentDTO(
-                comment.getId(),
-                comment.getComment(),
-                comment.getCreatedAt()
-        );
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(comment.getUser().getUsername());
-        userDTO.setFirstname(comment.getUser().getFirstname());
-        userDTO.setLastname(comment.getUser().getLastname());
-        commentDTO.setUser(userDTO);
-
-        return commentDTO;
+        return TaskDTOFactory.getInstance().getObject(task);
     }
 }

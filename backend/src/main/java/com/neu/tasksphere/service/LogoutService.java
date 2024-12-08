@@ -10,12 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogoutService implements LogoutHandler {
 
-//    private final TokenRepository tokenRepository;
-
-//    public LogoutService(TokenRepository tokenRepository) {
-//        this.tokenRepository = tokenRepository;
-//    }
-
     public LogoutService() {
     }
 
@@ -31,14 +25,5 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         SecurityContextHolder.clearContext();
-//        jwt = authHeader.substring(7);
-//        var storedToken = tokenRepository.findByToken(jwt)
-//                .orElse(null);
-//        if (storedToken != null) {
-//            storedToken.setExpired(true);
-//            storedToken.setRevoked(true);
-//            tokenRepository.save(storedToken);
-//            SecurityContextHolder.clearContext();
-//        }
     }
 }

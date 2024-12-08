@@ -1,16 +1,14 @@
 package com.neu.tasksphere.service;
 
+import com.neu.tasksphere.designpatterns.factory.ProjectDTOFactory;
 import com.neu.tasksphere.entity.Project;
-import com.neu.tasksphere.entity.Task;
 import com.neu.tasksphere.entity.factory.ProjectFactory;
 import com.neu.tasksphere.exception.ResourceNotFoundException;
 import com.neu.tasksphere.model.ProjectDTO;
-import com.neu.tasksphere.model.factory.ProjectDtoFactory;
 import com.neu.tasksphere.model.payload.request.ProjectRequest;
 import com.neu.tasksphere.model.payload.response.ApiResponse;
 import com.neu.tasksphere.model.payload.response.PagedResponse;
 import com.neu.tasksphere.repository.ProjectRepository;
-import com.neu.tasksphere.repository.UserProjectRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "ID", id));
 
-        ProjectDTO projectDTO = ProjectDtoFactory.INSTANCE.createProjectDto(project.getId(), project.getName(), project.getDescription());
+        ProjectDTO projectDTO = ProjectDTOFactory.INSTANCE.getObject(project);
+
         return ResponseEntity.ok(projectDTO);
     }
 
@@ -63,11 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         for (Project project : projects.getContent()) {
-            projectDtoList.add(new ProjectDTO(
-                    project.getId(),
-                    project.getName(),
-                    project.getDescription()
-            ));
+            projectDtoList.add(ProjectDTOFactory.INSTANCE.getObject(project));
         }
 
         return ResponseEntity.ok(new PagedResponse<>(
@@ -106,7 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setDescription(request.getDescription());
         projectRepository.save(project);
 
-        ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription());
+        ProjectDTO projectDTO = ProjectDTOFactory.INSTANCE.getObject(project);
 
         return ResponseEntity.ok(projectDTO);
     }

@@ -8,7 +8,15 @@ import com.neu.tasksphere.model.payload.response.ApiResponse;
 import com.neu.tasksphere.model.payload.response.PagedResponse;
 import com.neu.tasksphere.service.TaskService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -32,9 +40,11 @@ public class TaskController {
             @RequestParam(name = "userId", required = false) Integer userId,
             @RequestParam(name = "projectId", required = false) Integer projectId,
             @RequestParam(name = "priority", required = false) TaskPriority priority,
-            @RequestParam(name = "status", required = false) TaskStatus status) {
+            @RequestParam(name = "status", required = false) TaskStatus status,
+            @RequestParam(name = "sortBy", required = false) String sortBy,
+            @RequestParam(name = "filterBy", required = false) String filterBy) {
 
-        return taskService.getAllTasks(page, size, userId, projectId, priority, status);
+        return taskService.getAllTasks(page, size, userId, projectId, priority, status, sortBy, filterBy);
     }
 
     @PostMapping("/create")

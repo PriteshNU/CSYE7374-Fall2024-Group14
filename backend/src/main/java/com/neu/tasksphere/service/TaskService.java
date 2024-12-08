@@ -14,7 +14,8 @@ public interface TaskService {
 
     ResponseEntity<PagedResponse<TaskDTO>> getAllTasks(
             int page, int size, Integer userId, Integer projectId,
-            TaskPriority priority, TaskStatus status);
+            TaskPriority priority, TaskStatus status,
+            String sortBy, String filterBy);
 
     ResponseEntity<TaskDTO> createTask(TaskRequest request);
 

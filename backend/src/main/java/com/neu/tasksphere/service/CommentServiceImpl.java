@@ -1,13 +1,12 @@
 package com.neu.tasksphere.service;
 
+import com.neu.tasksphere.designpatterns.factory.CommentDTOFactory;
 import com.neu.tasksphere.entity.Comment;
 import com.neu.tasksphere.entity.Task;
 import com.neu.tasksphere.entity.User;
 import com.neu.tasksphere.entity.factory.CommentFactory;
 import com.neu.tasksphere.exception.ResourceNotFoundException;
 import com.neu.tasksphere.model.CommentDTO;
-import com.neu.tasksphere.model.UserDTO;
-import com.neu.tasksphere.model.factory.CommentDtoFactory;
 import com.neu.tasksphere.model.payload.request.CommentRequest;
 import com.neu.tasksphere.model.payload.response.ApiResponse;
 import com.neu.tasksphere.model.payload.response.PagedResponse;
@@ -43,10 +42,8 @@ public class CommentServiceImpl implements CommentService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> comments = commentRepository.findAll(pageable);
 
-        Comment.LastestCommentComparator commentComparator = new Comment.LastestCommentComparator();
-
         List<CommentDTO> commentDTOList = comments.stream()
-                .sorted(commentComparator)
+                .sorted(new Comment.LastestCommentComparator())
                 .map(this::mapToCommentDTO)
                 .collect(Collectors.toList());
 
@@ -71,19 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
-        CommentDTO commentDTO = new CommentDTO(
-                comment.getId(),
-                comment.getComment(),
-                comment.getCreatedAt()
-        );
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(user.getUsername());
-        userDTO.setFirstname(user.getFirstname());
-        userDTO.setLastname(user.getLastname());
-        commentDTO.setUser(userDTO);
-
-        return ResponseEntity.ok(commentDTO);
+        return ResponseEntity.ok(mapToCommentDTO(comment));
     }
 
     public ResponseEntity<ApiResponse> deleteComment(Integer id) {
@@ -96,20 +81,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentDTO mapToCommentDTO(Comment comment) {
-
-        CommentDtoFactory commentDtoFactory = CommentDtoFactory.getInstance();
-        CommentDTO commentDTO = commentDtoFactory.createCommentDto(comment.getId(),
-                comment.getComment(),
-                comment.getCreatedAt()
-
-        );
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(comment.getUser().getUsername());
-        userDTO.setFirstname(comment.getUser().getFirstname());
-        userDTO.setLastname(comment.getUser().getLastname());
-        commentDTO.setUser(userDTO);
-
-        return commentDTO;
+        return CommentDTOFactory.getInstance().getObject(comment);
     }
 }
