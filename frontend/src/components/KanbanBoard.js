@@ -2,47 +2,56 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
 import "../styles/css/KanbanBoard.css";
+import { Toast } from "react-bootstrap";
 const jwtToken = localStorage.getItem("jwtToken");
 
 export default function KanbanBoard({ data }) {
-  const [notStarted, setNotStarted] = useState([{}]);
-  const [inProgress, setInProgress] = useState([{}]);
-  const [completed, setCompleted] = useState([{}]);
+  const [notStarted, setNotStarted] = useState([]);
+  const [inProgress, setInProgress] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [inReview, setInReview] = useState([]);
+  const [onHold, setOnHold] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const username = localStorage.getItem("user_name");
 
   useEffect(() => {
     const dataToDisplay = data;
-    console.log(username);
-    console.log(dataToDisplay);
-    const filterNotStarted = dataToDisplay.filter(
-      (item) => item.status === "Open"
-    );
+    // console.log(username);
+    // console.log(dataToDisplay);
+    if (!data || data.length === 0) {
+      console.error("No tasks found in the data prop.");
+      return;
+    }
+    
+    const filterNotStarted = dataToDisplay.filter(item => item.status === "Open");
     setNotStarted(filterNotStarted || [{}]);
 
-    const filterInProgress = dataToDisplay.filter(
-      (item) => item.status === "InProgress" || item.status === "OnHold"
-    );
+    const filterInProgress = dataToDisplay.filter(item => item.status === "InProgress");
     setInProgress(filterInProgress || [{}]);
 
-    const filterCompleted = dataToDisplay.filter(
-      (item) => item.status === "Done"
-    );
+    const filterCompleted = dataToDisplay.filter(item => item.status === "Done");
     setCompleted(filterCompleted || [{}]);
-  }, [data]);
+
+    const filterInReview = dataToDisplay.filter(item => item.status === "InReview");
+    setInReview(filterInReview || [{}]);
+
+    const filterOnHold = dataToDisplay.filter(item => item.status === "OnHold");
+    setOnHold(filterOnHold || [{}]);
+}, [data]);
 
   // Function to handle the end of a drag operation
   const handleDragEnd = async (result) => {
-    console.log("result:", result);
+    // console.log("result:", result);
 
     if (!result.destination) {
+      // Toast.error("No destination");
       console.log("No destination");
       return;
     }
 
     const { destination, source, draggableId } = result;
-    console.log("source:", source);
-    console.log("destination:", destination);
+    // console.log("source:", source);
+    // console.log("destination:", destination);
 
     // If the source and destination columns are the same, do nothing
     if (source.droppableId === destination.droppableId) {
@@ -55,6 +64,8 @@ export default function KanbanBoard({ data }) {
       ...notStarted,
       ...inProgress,
       ...completed,
+      ...inReview,
+      ...onHold,
     ]);
     console.log("task:", task);
 
@@ -65,18 +76,58 @@ export default function KanbanBoard({ data }) {
       // update status
       var status = "";
       if (destination.droppableId === "2" && source.droppableId === "1") {
-        console.log("dest id : " + destination.droppableId);
-        status = "InProgress";
-      } else if (
-        destination.droppableId === "3" &&
-        source.droppableId === "2"
-      ) {
-        status = "Done";
-      }
+        status = "InProgress"; // Open to In Progress
+    } else if (destination.droppableId === "4") {
+        status = "InReview"; // Any state to In Review
+    } else if (destination.droppableId === "5" && source.droppableId != "1") {
+        status = "OnHold"; // Any state to On Hold
+    } else if (destination.droppableId === "3" && source.droppableId === "2") {
+        status = "Done"; // In Progress to Done
+    }else if (destination.droppableId === "2" && source.droppableId === "5") {
+      status = "InProgress"; // On Hold to In Progress
+  } 
+    else {
+      // Toast.error("Invalid drag-and-drop operation.");
+        console.error("Invalid drag-and-drop operation.");
+        return;
+    }
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Authorization", `Bearer ${jwtToken}`);
+    // Update task status locally
+    const updatedTask = { ...task, status };
+
+    // Remove task from source column and add to destination column
+    const removeFromSource = (column, setColumn) =>
+        setColumn(column.filter((t) => t.id !== task.id));
+
+    const addToDestination = (setColumn) =>
+        setColumn((prev) => [...prev, updatedTask]);
+
+    if (source.droppableId === "1") {
+        removeFromSource(notStarted, setNotStarted);
+    } else if (source.droppableId === "2") {
+        removeFromSource(inProgress, setInProgress);
+    } else if (source.droppableId === "3") {
+        removeFromSource(completed, setCompleted);
+    } else if (source.droppableId === "4") {
+        removeFromSource(inReview, setInReview);
+    } else if (source.droppableId === "5") {
+        removeFromSource(onHold, setOnHold);
+    }
+
+    if (destination.droppableId === "2") {
+        addToDestination(setInProgress);
+    } else if (destination.droppableId === "3") {
+        addToDestination(setCompleted);
+    } else if (destination.droppableId === "4") {
+        addToDestination(setInReview);
+    } else if (destination.droppableId === "5") {
+        addToDestination(setOnHold);
+    } else if (destination.droppableId === "1") {
+        addToDestination(setNotStarted);
+    }
 
       var raw = JSON.stringify({
         id: task.id,
@@ -120,10 +171,13 @@ export default function KanbanBoard({ data }) {
         "http://localhost:8080/api/v1/tasks/changeStatus",
         requestOptions
       );
+      console.log("Sending request to backend:", raw); // Log request payload
+      console.log("Request Options:", requestOptions); // Log headers and options
+      console.log(response);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      //--------------------------
+    //  --------------------------
 
       try {
         const response = await fetch("http://localhost:8080/api/v1/tasks", {
@@ -197,6 +251,10 @@ export default function KanbanBoard({ data }) {
           <Column title={"To Do"} tasks={notStarted} id={"1"} />
           <Column title={"In Progress"} tasks={inProgress} id={"2"} />
           <Column title={"Done"} tasks={completed} id={"3"} />
+          <Column title={"In Review"} tasks={inReview} id={"4"} />
+          <Column title={"On Hold"} tasks={onHold} id={"5"} />
+
+          
         </div>
       </div>
     </DragDropContext>

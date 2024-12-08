@@ -1,5 +1,6 @@
 package com.neu.tasksphere.entity;
 
+import com.neu.tasksphere.designpatterns.state.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neu.tasksphere.entity.enums.TaskPriority;
 import com.neu.tasksphere.entity.enums.TaskStatus;
@@ -40,6 +41,8 @@ public class Task implements Comparable<Task> {
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @Transient
+    private TaskState state;
     public Task(
             String name,
             String description,
@@ -53,9 +56,11 @@ public class Task implements Comparable<Task> {
         this.priority = priority;
         this.status = status;
         this.project = project;
+
     }
 
     public Task() {
+        this.state = OpenState.getInstance();
     }
 
     @PrePersist
@@ -134,6 +139,39 @@ public class Task implements Comparable<Task> {
     public void setAssignee(User user) {
         this.assignee = user;
     }
+    public void setState(TaskState state) {
+        this.state = state;
+        System.out.println("Task state transitioned to: " + state.getClass().getSimpleName());
+
+    }
+
+    public TaskState getState() {
+        return state;
+    }
+
+    public void start() {
+        state.start(this);
+    }
+
+    public void hold() {
+        state.hold(this);
+    }
+
+    public void complete() {
+        state.complete(this);
+    }
+
+    public void review() {
+        state.review(this);
+    }
+
+    public void cancel() {
+        state.cancel(this);
+    }
+
+    public void reject() {
+        state.reject(this);
+    }
 
     public String toString() {
         return "Task(id=" + this.getId() +
@@ -148,5 +186,33 @@ public class Task implements Comparable<Task> {
     @Override
     public int compareTo(Task o) {
         return Integer.compare(this.getPriority().getPriority(), o.getPriority().getPriority());
+    }
+    @PostLoad
+    public void initializeState() {
+        switch (this.status) {
+            case Open:
+                this.state = OpenState.getInstance();
+                break;
+            case InProgress:
+                this.state = InProgressState.getInstance();
+                break;
+            case Done:
+                this.state = DoneState.getInstance();
+                break;
+            case OnHold:
+                this.state = OnHoldState.getInstance();
+                break;
+            case InReview:
+                this.state = InReviewState.getInstance();
+                break;
+            case Cancelled:
+                this.state = CancelledState.getInstance();
+                break;
+            case Rejected:
+                this.state = RejectedState.getInstance();
+                break;
+            default:
+                throw new IllegalStateException("Unknown TaskStatus: " + this.status);
+        }
     }
 }
