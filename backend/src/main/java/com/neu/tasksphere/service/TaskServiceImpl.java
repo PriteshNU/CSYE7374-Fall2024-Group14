@@ -1,6 +1,9 @@
 package com.neu.tasksphere.service;
 
 import com.neu.tasksphere.designpatterns.builder.TaskBuilder;
+import com.neu.tasksphere.designpatterns.decorator.LoggingDecorator;
+import com.neu.tasksphere.designpatterns.decorator.NotificationDecorator;
+import com.neu.tasksphere.designpatterns.decorator.TaskDecorator;
 import com.neu.tasksphere.designpatterns.factory.TaskDTOFactory;
 import com.neu.tasksphere.designpatterns.strategy.TaskFilteringStrategy;
 import com.neu.tasksphere.designpatterns.strategy.TaskSortingStrategy;
@@ -201,6 +204,9 @@ public class TaskServiceImpl implements TaskService {
         task.setPriority(request.getPriority());
         taskRepository.save(task);
 
+        TaskDecorator decoratedTask = new LoggingDecorator(new NotificationDecorator(request));
+        decoratedTask.setPriority(request.getPriority());
+
         // Notify observers
         notificationService.notifyObservers(new TaskEvent(task, "TaskPriorityChanged"));
 
@@ -237,6 +243,10 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
+        TaskDecorator decoratedTask = new LoggingDecorator(new NotificationDecorator(request));
+        decoratedTask.setStatus(request.getStatus());
+
+        // Update priority dynamically
         // Notify observers
         notificationService.notifyObservers(new TaskEvent(task, "TaskStatusChanged"));
 

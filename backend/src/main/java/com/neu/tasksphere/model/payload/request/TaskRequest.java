@@ -1,8 +1,9 @@
 package com.neu.tasksphere.model.payload.request;
 
+import com.neu.tasksphere.designpatterns.decorator.TaskDecorator;
 import com.neu.tasksphere.model.TaskDTO;
 
-public class TaskRequest extends TaskDTO {
+public class TaskRequest extends TaskDTO implements TaskDecorator {
     private Integer projectId;
     private Integer assigneeId;
 
