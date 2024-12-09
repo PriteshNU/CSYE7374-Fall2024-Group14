@@ -1,5 +1,6 @@
 package com.neu.tasksphere.designpatterns.builder;
 
+import com.neu.tasksphere.entity.enums.Role;
 import com.neu.tasksphere.model.UserDTO;
 
 public class UserDTOBuilder {
@@ -29,6 +30,10 @@ public class UserDTOBuilder {
         return this;
     }
 
+    public UserDTOBuilder withRole(String role) {
+        userDTO.setRole(Role.valueOf(role));
+        return this;
+    }
     public UserDTO build() {
         return userDTO;
     }
