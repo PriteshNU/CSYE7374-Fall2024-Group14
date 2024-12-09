@@ -21,7 +21,6 @@ const ProjectList = ({ onRowClick, refresh }) => {
   ]);
 
   useEffect(() => {
-    debugger
     // Function to fetch data from the API
     console.log(refresh)
     const fetchData = async () => {

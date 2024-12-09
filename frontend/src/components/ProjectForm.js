@@ -66,7 +66,6 @@ const ProjectForm = ({ refreshTasks, onButtonClick }) => {
         .then((data) => {
           console.log(data);
           alert("Project Created !");
-          debugger
           onButtonClick("AllTasks");
         refreshTasks();
         })

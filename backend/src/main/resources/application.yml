@@ -16,18 +16,9 @@ spring:
         format_sql: true
     database: postgresql
 
-  mail:
-    host: smtp.mailgun.org
-    port: 587
-    username: postmaster@sandbox8f8b21174b35486ea2dcb63ce40b26b7.mailgun.org
-    password: c1a8ad192805bf32c44b9e22cca8cf9c-309b0ef4-64d342d3
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+mailgun:
+  api-key: 5b033328917a86d90a4d7636c067d12e-da554c25-281a91c0
+  domain: pritesh-nimje.me
 
 application:
   security:
