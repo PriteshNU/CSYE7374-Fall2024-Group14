@@ -20,6 +20,7 @@ public class UserDTOFactory {
                 .withFirstname(user.getFirstname())
                 .withLastname(user.getLastname())
                 .withUsername(user.getUsername())
+                .withRole(user.getRole().name())
                 .build();
     }
 }
