@@ -150,20 +150,24 @@ public class ProjectServiceImpl implements ProjectService {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        ProjectFactory projectFactory = ProjectFactory.getInstance();
-        List<ProjectDTO> list = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()))) {
-            String inputLine = null;
-            while ((inputLine = br.readLine()) != null) {
-                String[] fields = inputLine.split(",");
-                Project project = projectFactory.createProject(fields[0], fields[1]);
-                projectRepository.save(project);
-                list.add(new ProjectDTO(project.getId(), project.getName(), project.getDescription()));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        return ResponseEntity.ok(list);
+        CSVFileProcessor csvFileProcessor = new CSVFileProcessor(projectRepository);
+        List<ProjectDTO> projectList = csvFileProcessor.processFile(multipartFile);
+    return ResponseEntity.ok(projectList);
+        // ProjectFactory projectFactory = ProjectFactory.getInstance();
+        // List<ProjectDTO> list = new ArrayList<>();
+        // try (BufferedReader br = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()))) {
+        //     String inputLine = null;
+        //     while ((inputLine = br.readLine()) != null) {
+        //         String[] fields = inputLine.split(",");
+        //         Project project = projectFactory.createProject(fields[0], fields[1]);
+        //         projectRepository.save(project);
+        //         list.add(new ProjectDTO(project.getId(), project.getName(), project.getDescription()));
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+
+        // return ResponseEntity.ok(list);
     }
 }

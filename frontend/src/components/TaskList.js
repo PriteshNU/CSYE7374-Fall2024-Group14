@@ -9,7 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const jwtToken = localStorage.getItem("jwtToken");
 
-const TaskList = ({ onRowClick }) => {
+const ProjectList = ({ onRowClick, refresh }) => {
   // Row Data: The data to be displayed.
   const [rowData, setRowData] = useState([]);
   const navigate = useNavigate();
@@ -21,7 +21,9 @@ const TaskList = ({ onRowClick }) => {
   ]);
 
   useEffect(() => {
+    debugger
     // Function to fetch data from the API
+    console.log(refresh)
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -54,7 +56,7 @@ const TaskList = ({ onRowClick }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const handleRowClick = (event) => {
     const projectId = event.data.column2;
@@ -81,4 +83,4 @@ const TaskList = ({ onRowClick }) => {
   );
 };
 
-export default TaskList;
+export default ProjectList;

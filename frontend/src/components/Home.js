@@ -21,23 +21,32 @@ const Home = () => {
   const [allTasks, setAllTask] = useState([{}]);
   const [allProjectTasks, setAllProjectTask] = useState([{}]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [refreshLeftNav, setRefreshLeftNav] = useState(false);
 
   const handleDisplayComponent = (Component) => {
     setDisplayComponent(Component);
   };
 
-  const fetchAllTasks = async () => {
+  const fetchAllTasks = async () => { 
     try {
       const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-
       const result = await response.data.data;
       setAllTask(result);
     } catch (error) {
       console.log("Error", error);
+    }
+  };
+  const refreshTasks = async () => {
+    try {
+       fetchAllTasks();
+      
+      setRefreshLeftNav((prev) => !prev); // Toggle refresh state
+    } catch (error) {
+      console.error("Error refreshing tasks:", error);
     }
   };
 
@@ -50,7 +59,7 @@ const Home = () => {
       case "DeleteTask":
         return <DeleteTask onButtonClick={handleDisplayComponent} />;
       case "CreateProject":
-        return <ProjectForm />;
+        return <ProjectForm refreshTasks={refreshTasks} onButtonClick={handleDisplayComponent} />;
       case "DeleteProject":
         return <DeleteProject onButtonClick={handleDisplayComponent} />;
       case "Project":
@@ -66,7 +75,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchAllTasks();
-  }, []);
+  }, [displayComponent]);
 
   const fetchData = async (id) => {
     try {
@@ -107,6 +116,7 @@ const Home = () => {
           <LeftNavigation
             onButtonClick={handleDisplayComponent}
             onRowClick={handleIdFromTaskList}
+            refreshTrigger={refreshLeftNav}
           />
         </div>
         <div className="main-content">{display()}</div>

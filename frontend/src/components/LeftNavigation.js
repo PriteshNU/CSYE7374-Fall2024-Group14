@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../styles/css/LeftNavbar.css";
 import { Nav, Container, Button } from "react-bootstrap";
-import TaskList from "./TaskList";
+import ProjectList from "./TaskList";
 import axios from "axios";
 const jwtToken = localStorage.getItem("jwtToken");
 
-const LeftNavigation = ({ onButtonClick, onRowClick }) => {
+const LeftNavigation = ({ onButtonClick, onRowClick, refreshTrigger  }) => {
   const userRole = localStorage.getItem("user_role");
   const userName = localStorage.getItem("user_name");
   const isUserAdminOrManager = userRole === "Admin" || userRole === "Manager";
@@ -28,9 +28,9 @@ const LeftNavigation = ({ onButtonClick, onRowClick }) => {
         console.error("Error fetching assignees:", error);
       }
     };
-
+    console.log("////////")
     fetchUserProfile();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <Nav className="flex-column vertical-navbar">
@@ -42,7 +42,7 @@ const LeftNavigation = ({ onButtonClick, onRowClick }) => {
         <h6>Role: {userProfile.role}</h6>
       </Container>
       <hr />
-      <TaskList onRowClick={onRowClick} />
+      <ProjectList onRowClick={onRowClick} refresh={refreshTrigger}/>
       <div className="action-buttons-container">
         <Button className="mt-3 mb-3" onClick={() => onButtonClick("AllTasks")}>
           View All Tasks

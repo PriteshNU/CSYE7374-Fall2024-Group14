@@ -5,7 +5,7 @@ import axios from "axios";
 
 const jwtToken = localStorage.getItem("jwtToken");
 
-const ProjectForm = () => {
+const ProjectForm = ({ refreshTasks, onButtonClick }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -47,6 +47,8 @@ const ProjectForm = () => {
           alert("Project Created !");
           window.location.reload();
         }
+        onButtonClick("AllTasks");
+        refreshTasks();
       } catch (error) {
         console.error("Error:", error);
       }
@@ -64,6 +66,9 @@ const ProjectForm = () => {
         .then((data) => {
           console.log(data);
           alert("Project Created !");
+          debugger
+          onButtonClick("AllTasks");
+        refreshTasks();
         })
         .catch((error) => console.error("Error:", error));
     }
