@@ -1,9 +1,34 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
 import "../styles/css/KanbanBoard.css";
-import { Toast } from "react-bootstrap";
+
 const jwtToken = localStorage.getItem("jwtToken");
+
+const BoardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f4f8;
+  min-height: 100vh;
+`;
+
+const BoardTitle = styled.h2`
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const ColumnsContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+`;
+
 
 export default function KanbanBoard({ data }) {
   const [notStarted, setNotStarted] = useState([]);
@@ -11,13 +36,9 @@ export default function KanbanBoard({ data }) {
   const [completed, setCompleted] = useState([]);
   const [inReview, setInReview] = useState([]);
   const [onHold, setOnHold] = useState([]);
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const username = localStorage.getItem("user_name");
 
   useEffect(() => {
     const dataToDisplay = data;
-    // console.log(username);
-    // console.log(dataToDisplay);
     if (!data || data.length === 0) {
       console.error("No tasks found in the data prop.");
       return;
@@ -41,10 +62,7 @@ export default function KanbanBoard({ data }) {
 
   // Function to handle the end of a drag operation
   const handleDragEnd = async (result) => {
-    // console.log("result:", result);
-
     if (!result.destination) {
-      // Toast.error("No destination");
       console.log("No destination");
       return;
     }
@@ -243,20 +261,16 @@ export default function KanbanBoard({ data }) {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="kanban-container">
-        <h2 className="board-title">Kanban Board</h2>
-        <br />
-        <div className="columns-container">
-          {/* Render columns for "To Do", "In Progress", and "Done" */}
-          <Column title={"To Do"} tasks={notStarted} id={"1"} />
-          <Column title={"In Progress"} tasks={inProgress} id={"2"} />
-          <Column title={"Done"} tasks={completed} id={"3"} />
-          <Column title={"In Review"} tasks={inReview} id={"4"} />
-          <Column title={"On Hold"} tasks={onHold} id={"5"} />
-
-          
-        </div>
-      </div>
+      <BoardContainer>
+        <BoardTitle>Kanban Board</BoardTitle>
+        <ColumnsContainer>
+          <Column title="To Do" tasks={notStarted} id="1" />
+          <Column title="In Progress" tasks={inProgress} id="2" />
+          <Column title="Done" tasks={completed} id="3" />
+          <Column title="In Review" tasks={inReview} id="4" />
+          <Column title="On Hold" tasks={onHold} id="5" />
+        </ColumnsContainer>
+      </BoardContainer>
     </DragDropContext>
   );
 }

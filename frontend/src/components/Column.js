@@ -4,20 +4,24 @@ import Task from "./Task";
 import "../styles/css/scroll.css";
 import { Droppable } from "react-beautiful-dnd";
 
-const Container = styled.div`
-  background-color: #f4f5f7;
-  border-radius: 2.5px;
+const ColumnContainer = styled.div`
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 300px;
-  height: 65vh;
-  overflow-y: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  border: 1px solid gray;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
 `;
 
-const Title = styled.h3`
-  padding: 8px;
-  background-color: pink;
+const ColumnTitle = styled.h3`
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
   text-align: center;
 `;
 
@@ -30,42 +34,18 @@ const TaskList = styled.div`
 `;
 
 export default function Column({ title, tasks, id }) {
-  const columnTasks = tasks || [{}];
-  console.log(columnTasks);
-
   return (
-    <Container className="column">
-      <Title
-        style={{
-          backgroundColor: "black",
-          color: "white",
-          position: "sticky",
-          top: 0,
-        }}
-      >
-        {title}
-      </Title>
-      <Droppable droppableId={id}>
-        {(provided, snapshot) => (
-          <TaskList
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            isDraggingOver={snapshot.isDraggingOver}
-          >
-            {columnTasks.map((task, index) => (
-              <Task
-                key={task.id} // Use task ID as the key
-                index={index}
-                task={task}
-                isDraggable={true}
-                isDone={false}
-              />
-            ))}
-
-            {provided.placeholder}
-          </TaskList>
-        )}
-      </Droppable>
-    </Container>
+    <Droppable droppableId={id}>
+      {(provided) => (
+        <ColumnContainer ref={provided.innerRef} {...provided.droppableProps}>
+          <ColumnTitle>{title}</ColumnTitle>
+          {tasks.map((task, index) => (
+            <Task key={task.id} task={task} index={index} />
+          ))}
+          {provided.placeholder}
+        </ColumnContainer>
+      )}
+    </Droppable>
   );
 }
+

@@ -210,6 +210,7 @@ public class TaskServiceImpl implements TaskService {
     public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
         Task task = taskRepository.findById(request.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
+
         System.out.println("Current State: " + task.getState().getClass().getSimpleName());
         switch (request.getStatus()) {
             case InProgress:
@@ -234,7 +235,6 @@ public class TaskServiceImpl implements TaskService {
                 throw new IllegalArgumentException("Invalid task status");
         }
 
-//        task.setStatus(request.getStatus());
         taskRepository.save(task);
 
         // Notify observers

@@ -1,13 +1,34 @@
 package com.neu.tasksphere.entity;
 
-import com.neu.tasksphere.designpatterns.state.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.neu.tasksphere.designpatterns.state.CancelledState;
+import com.neu.tasksphere.designpatterns.state.DoneState;
+import com.neu.tasksphere.designpatterns.state.InProgressState;
+import com.neu.tasksphere.designpatterns.state.InReviewState;
+import com.neu.tasksphere.designpatterns.state.OnHoldState;
+import com.neu.tasksphere.designpatterns.state.OpenState;
+import com.neu.tasksphere.designpatterns.state.RejectedState;
+import com.neu.tasksphere.designpatterns.state.TaskState;
 import com.neu.tasksphere.entity.enums.TaskPriority;
 import com.neu.tasksphere.entity.enums.TaskStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +64,7 @@ public class Task implements Comparable<Task> {
 
     @Transient
     private TaskState state;
+
     public Task(
             String name,
             String description,
@@ -139,6 +161,7 @@ public class Task implements Comparable<Task> {
     public void setAssignee(User user) {
         this.assignee = user;
     }
+
     public void setState(TaskState state) {
         this.state = state;
         System.out.println("Task state transitioned to: " + state.getClass().getSimpleName());
@@ -187,6 +210,7 @@ public class Task implements Comparable<Task> {
     public int compareTo(Task o) {
         return Integer.compare(this.getPriority().getPriority(), o.getPriority().getPriority());
     }
+
     @PostLoad
     public void initializeState() {
         switch (this.status) {

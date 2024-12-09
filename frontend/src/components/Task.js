@@ -4,89 +4,66 @@ import styled from "styled-components";
 import { Avatar, Image } from "antd";
 import { useNavigate } from "react-router-dom";
 
-const Container = styled.div`
-  border-radius: 10px;
-  box-shadow: 5px 5px 5px 2px grey;
-  padding: 8px;
-  color: #000;
+const TaskContainer = styled.div`
+  background-color: ${(props) =>
+    props.isDragging ? "#d1ecf1" : props.isCompleted ? "#d4edda" : "#f8f9fa"};
+  border: ${(props) =>
+    props.isDragging ? "2px dashed #007bff" : "1px solid #ced4da"};
+  border-radius: 5px;
+  padding: 10px;
   margin-bottom: 8px;
-  min-height: 90px;
-  margin-left: 10px;
-  margin-right: 10px;
-  background-color: ${(props) => bgcolorChange(props)};
-  cursor: pointer;
+  cursor: grab;
+  box-shadow: ${(props) =>
+    props.isDragging ? "0 4px 10px rgba(0, 0, 0, 0.2)" : "none"};
+  transition: box-shadow 0.2s ease;
+`;
+
+const TaskHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-direction: column;
+  align-items: center;
 `;
 
-const TextContent = styled.div`
-  display: flex;
+const TaskTitle = styled.h5`
+  font-size: 16px;
+  margin: 0;
 `;
 
-const Icons = styled.div`
-  display: flex;
-  justify-content: end;
-  padding: 2px;
+const TaskPriority = styled.span`
+  background-color: ${(props) =>
+    props.priority === "High"
+      ? "#f8d7da"
+      : props.priority === "Medium"
+      ? "#fff3cd"
+      : "#d4edda"};
+  color: ${(props) =>
+    props.priority === "High"
+      ? "#721c24"
+      : props.priority === "Medium"
+      ? "#856404"
+      : "#155724"};
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
 `;
-function bgcolorChange(props) {
-  return props.isDragging
-    ? "lightgreen"
-    : props.isDone
-    ? "#F2D7D5"
-    : props.isDraggable
-    ? "#DCDCDC"
-    : "#EAF4FC";
-}
 
 export default function Task({ task, index }) {
-  const navigate = useNavigate();
-
-  // const handleTaskClick = () => {
-  //   navigate(`/assignTask/${task.id}`);
-  // };
-
   return (
-    <Draggable draggableId={`${task.id}`} key={task.id} index={index}>
+    <Draggable draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
-        <Container
-          // onClick={handleTaskClick}
+        <TaskContainer
+          ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          isDragging={snapshot.isDragging} // Update property name
+          isDragging={snapshot.isDragging}
+          isCompleted={task.status === "Done"}
         >
-          <div style={{ display: "flex", justifyContent: "start", padding: 2 }}>
-            <span>
-              <small>
-                #{task.id}
-                {"  "}
-              </small>
-            </span>
-          </div>
-          <div
-            style={{
-              textAlign: "center",
-              justifyContent: "center",
-              padding: 2,
-            }}
-          >
-            <h4 style={{ fontWeight: "Bolder" }}>{task.name}</h4>
-            <h5>{task.description}</h5>
-            <h6 style={{ fontStyle: "italic" }}>priority : {task.priority}</h6>
-          </div>
-          <Icons>
-            <div>
-              <Avatar
-                onClick={() => console.log(task)}
-                src={"https://joesch.moe/api/v1/random?key=" + task.id}
-              />
-            </div>
-          </Icons>
-          {provided.placeholder ? (
-            <div ref={provided.placeholder} style={{ visibility: "hidden" }} />
-          ) : null}
-        </Container>
+          <TaskHeader>
+            <TaskTitle>{task.name}</TaskTitle>
+            <TaskPriority priority={task.priority}>{task.priority}</TaskPriority>
+          </TaskHeader>
+          <p>{task.description}</p>
+        </TaskContainer>
       )}
     </Draggable>
   );
