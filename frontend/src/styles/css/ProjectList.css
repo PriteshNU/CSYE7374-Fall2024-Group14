@@ -1,0 +1,45 @@
+.project-list-scroll {
+  padding: 0;
+}
+
+.list-group-item {
+  border: none; /* Remove borders for a cleaner look */
+  border-radius: 12px; /* Round corners for a smoother look */
+  margin-bottom: 12px;
+  padding: 12px 20px; /* Add padding for more space */
+  background-color: #f8f9fa; /* Light background color */
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.project-list-item:hover {
+  background-color: #007bff; /* Change background to blue when hovering */
+  color: white; /* White text on hover */
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for hover effect */
+}
+
+.project-list-item:active {
+  transform: scale(0.98); /* Add scale effect when clicked */
+}
+
+.project-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.project-icon {
+  font-size: 20px;
+  margin-right: 15px; /* Add space between the icon and text */
+  color: #007bff; /* Icon color matching hover effect */
+}
+
+.project-name {
+  font-weight: bold; /* Make project name bold */
+  font-size: 16px; /* Adjust font size for readability */
+  color: #333; /* Darker text color for better contrast */
+}
+
+.project-name:hover {
+  color: #fff; /* Change text color to white on hover */
+}

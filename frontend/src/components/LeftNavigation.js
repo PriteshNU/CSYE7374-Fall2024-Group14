@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/css/LeftNavbar.css";
 import { Nav, Container, Button } from "react-bootstrap";
-import ProjectList from "./TaskList";
+import ProjectList from "./ProjectList";
 import { FaTasks, FaPlus, FaProjectDiagram, FaUserPlus, FaTrash } from "react-icons/fa";
 import axios from "axios";
 

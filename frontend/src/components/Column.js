@@ -25,14 +25,6 @@ const ColumnTitle = styled.h3`
   text-align: center;
 `;
 
-const TaskList = styled.div`
-  padding: 3px;
-  transition: background-color 0.2s ease;
-  background-color: ${(props) => (props.isDraggingOver ? "blue" : "#f4f5f7")};
-  flex-grow: 1;
-  min-height: 100px;
-`;
-
 export default function Column({ title, tasks, id }) {
   return (
     <Droppable droppableId={id}>
