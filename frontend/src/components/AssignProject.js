@@ -3,10 +3,11 @@ import '../styles/css/AssignProject.css'
 import Form from 'react-bootstrap/Form';
 import { Button, Container } from 'react-bootstrap';
 import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 
 const jwtToken = localStorage.getItem("jwtToken");
 
-const AssignProject = () => {
+const AssignProject = ({ onButtonClick }) => {
     const [projects, setProjects] = useState([]);
     const [assignees, setAssignees] = useState([]);
 
@@ -103,7 +104,13 @@ const AssignProject = () => {
 
                 <div className='Buttons'>
                     <Button variant='primary btn-lg' type='submit'>Assign</Button>
-                    <Button variant='danger btn-lg' type='reset'>Cancel</Button>
+                    <Button
+                        variant="danger btn-lg"
+                        type="reset"
+                        onClick={() => onButtonClick("AllTasks")}
+                    >
+                        Cancel
+                    </Button>
                 </div>
             </Form>
         </Container>

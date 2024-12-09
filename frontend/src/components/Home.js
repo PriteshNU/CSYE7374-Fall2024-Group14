@@ -56,7 +56,7 @@ const Home = () => {
       case "Project":
         return allProjectTasks ? <KanbanBoard data={allProjectTasks} /> : null;
       case "AssignProject":
-        return <AssignProject />;
+        return <AssignProject onButtonClick={handleDisplayComponent}/>;
       default:
         return allTasks && allTasks.length > 0 ? (
           <KanbanBoard data={allTasks} />
