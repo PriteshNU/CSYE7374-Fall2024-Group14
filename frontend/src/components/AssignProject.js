@@ -15,7 +15,7 @@ const AssignProject = ({ onButtonClick }) => {
         id: 0,
         assigneeId: 0
     });
-
+    
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };

@@ -68,6 +68,13 @@ public class ProjectController {
         return userProjectService.getAllUsersByProject(id);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ProjectDTO>> getProjectsByUser(@PathVariable("userId") Integer userId) {
+        List<ProjectDTO> projects = userProjectService.getAllProjectsByUser(userId);
+        return ResponseEntity.ok(projects);
+    }
+
+
     @PostMapping("/export")
     public ResponseEntity<List<ProjectDTO>> exportProject() {
         return projectService.exportProject();

@@ -22,6 +22,9 @@ const Home = () => {
   const [allProjectTasks, setAllProjectTask] = useState([{}]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [refreshLeftNav, setRefreshLeftNav] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const userRole = localStorage.getItem("user_role");
+  const userId = localStorage.getItem("user_id");
 
   const handleDisplayComponent = (Component) => {
     setDisplayComponent(Component);
@@ -40,10 +43,38 @@ const Home = () => {
       console.log("Error", error);
     }
   };
+  const fetchProjects = async () => {
+    try {
+      const userRole = localStorage.getItem("user_role");
+      const userId = localStorage.getItem("user_id");
+      let response;
+  
+      if (userRole === "Admin") {
+        response = await axios.get(`${baseUrl}/api/v1/projects`, {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+        });
+      } else {
+        response = await axios.get(`${baseUrl}/api/v1/projects/user/${userId}`, {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+        });
+      }
+  
+      const fetchedProjects = response.data.data || response.data;
+      if (Array.isArray(fetchedProjects)) {
+        setProjects(fetchedProjects);
+      } else {
+        console.error("Unexpected projects format:", fetchedProjects);
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setProjects([]);
+    }
+  };
+  
   const refreshTasks = async () => {
     try {
        fetchAllTasks();
-      
       setRefreshLeftNav((prev) => !prev); // Toggle refresh state
     } catch (error) {
       console.error("Error refreshing tasks:", error);
@@ -74,7 +105,20 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchAllTasks();
+    const fetchInitialData = async () => {
+      // Ensure user profile is fetched first for non-admin roles
+      const userRole = localStorage.getItem("user_role");
+      const userId = localStorage.getItem("user_id");
+  
+      if (!userRole || !userId) {
+        console.error("User role or ID not set. Cannot fetch projects.");
+        return;
+      }
+  
+      await fetchProjects(); // Fetch projects based on role
+      await fetchAllTasks(); // Fetch all tasks
+    };
+    fetchInitialData();
   }, [displayComponent]);
 
   const fetchData = async (id) => {
@@ -117,6 +161,7 @@ const Home = () => {
             onButtonClick={handleDisplayComponent}
             onRowClick={handleIdFromTaskList}
             refreshTrigger={refreshLeftNav}
+            projects={projects}
           />
         </div>
         <div className="main-content">{display()}</div>

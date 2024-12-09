@@ -33,7 +33,7 @@ const Login = () => {
 
       localStorage.setItem("user_role", tokenData.roles);
       localStorage.setItem("user_name", tokenData.sub);
-
+      
       navigate("/");
     } catch (error) {
       console.log("Login failed", error);
