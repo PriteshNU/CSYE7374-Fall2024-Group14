@@ -1,7 +1,6 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { Avatar, Image } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const TaskContainer = styled.div`
@@ -48,6 +47,12 @@ const TaskPriority = styled.span`
 `;
 
 export default function Task({ task, index }) {
+  const navigate = useNavigate();
+
+  const handleTaskClick = () => {
+    navigate(`/assignTask/${task.id}`);
+  };
+  
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
@@ -57,10 +62,13 @@ export default function Task({ task, index }) {
           {...provided.dragHandleProps}
           isDragging={snapshot.isDragging}
           isCompleted={task.status === "Done"}
+          onClick={handleTaskClick}
         >
           <TaskHeader>
             <TaskTitle>{task.name}</TaskTitle>
-            <TaskPriority priority={task.priority}>{task.priority}</TaskPriority>
+            <TaskPriority priority={task.priority}>
+              {task.priority}
+            </TaskPriority>
           </TaskHeader>
           <p>{task.description}</p>
         </TaskContainer>

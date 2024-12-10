@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import '../styles/css/AssignTask.css'
 import { Button, Container, Form } from 'react-bootstrap';
 import axios from 'axios';
-import LeftNavigation from "./LeftNavigation";
 
 const jwtToken = localStorage.getItem("jwtToken");
 
@@ -62,7 +61,7 @@ const AssignTask = () => {
     return (
 
         <Container className='assignProjectForm'>
-            <div className="assignProjectForm-title">Assign Project</div>
+            <div className="assignProjectForm-title">Assign Task</div>
             <hr />
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlSelect2">

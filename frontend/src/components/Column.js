@@ -4,12 +4,13 @@ import Task from "./Task";
 import "../styles/css/scroll.css";
 import { Droppable } from "react-beautiful-dnd";
 
+
 const ColumnContainer = styled.div`
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 300px;
-  max-height: 70vh;
+  height: calc(100vh - 100px); /* Adjust the 100px as needed */
   overflow-y: auto;
   display: flex;
   flex-direction: column;

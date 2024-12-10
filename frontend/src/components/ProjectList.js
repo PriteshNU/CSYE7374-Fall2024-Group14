@@ -6,14 +6,20 @@ import axios from "axios";
 
 const jwtToken = localStorage.getItem("jwtToken");
 
-const ProjectList = ({ onRowClick, refresh }) => {
+const ProjectList = ({ onRowClick, refresh, selectedProjectId }) => {
   const [projects, setProjects] = useState([]);
+
+  const user_id = localStorage.getItem("user_id");
+  const userRole = localStorage.getItem("user_role");
+  const isUserAdminOrManager = userRole === "Admin" || userRole === "Manager";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/projects?page=0&size=50`,
+          isUserAdminOrManager
+            ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/projects?page=0&size=50`
+            : `${process.env.REACT_APP_API_BASE_URL}/api/v1/projects?page=0&size=50&userId=${user_id}`,
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,
@@ -43,8 +49,8 @@ const ProjectList = ({ onRowClick, refresh }) => {
       <div
         className="project-list-scroll"
         style={{
-          height: "350px", // Slightly taller for a better view
-          overflowY: "auto", // Enables vertical scrolling when needed
+          height: "350px",
+          overflowY: "auto",
         }}
       >
         <ListGroup variant="flush">
@@ -52,10 +58,12 @@ const ProjectList = ({ onRowClick, refresh }) => {
             <ListGroup.Item
               key={project.id}
               onClick={() => onRowClick(project.id)}
-              className="project-list-item"
+              className={`project-list-item ${
+                project.id === selectedProjectId ? "active" : ""
+              }`}
             >
               <div className="project-item-content">
-                <FaFolder className="project-icon" /> {/* Folder icon */}
+                <FaFolder className="project-icon" />
                 <span className="project-name">{project.name}</span>
               </div>
             </ListGroup.Item>
@@ -67,3 +75,4 @@ const ProjectList = ({ onRowClick, refresh }) => {
 };
 
 export default ProjectList;
+

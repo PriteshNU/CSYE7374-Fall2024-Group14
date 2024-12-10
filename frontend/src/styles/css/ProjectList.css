@@ -43,3 +43,9 @@
 .project-name:hover {
   color: #fff; /* Change text color to white on hover */
 }
+
+.project-list-item.active {
+  background-color: #f0f8ff; /* Light blue background */
+  font-weight: bold;
+  border-left: 4px solid #007bff; /* Highlight border */
+}

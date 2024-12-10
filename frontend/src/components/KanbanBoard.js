@@ -39,10 +39,6 @@ export default function KanbanBoard({ data }) {
 
   useEffect(() => {
     const dataToDisplay = data;
-    if (!data || data.length === 0) {
-      console.error("No tasks found in the data prop.");
-      return;
-    }
     
     const filterNotStarted = dataToDisplay.filter(item => item.status === "Open");
     setNotStarted(filterNotStarted || [{}]);
@@ -62,15 +58,8 @@ export default function KanbanBoard({ data }) {
 
   // Function to handle the end of a drag operation
   const handleDragEnd = async (result) => {
-    if (!result.destination) {
-      console.log("No destination");
-      return;
-    }
 
     const { destination, source, draggableId } = result;
-    // console.log("source:", source);
-    // console.log("destination:", destination);
-
     // If the source and destination columns are the same, do nothing
     if (source.droppableId === destination.droppableId) {
       console.log("Same column, do nothing");
@@ -149,33 +138,7 @@ export default function KanbanBoard({ data }) {
 
       var raw = JSON.stringify({
         id: task.id,
-        name: task.name,
-        description: task.description,
-        deadline: task.deadline,
-        priority: task.priority,
-        status: status,
-        assignee: {
-          id: 0,
-          username: "string",
-          firstname: "string",
-          lastname: "string",
-          role: "Admin",
-        },
-        comments: [
-          {
-            id: 0,
-            user: {
-              id: 0,
-              username: "string",
-              firstname: "string",
-              lastname: "string",
-              role: "Admin",
-            },
-            createdAt: "2023-12-11T08:22:21.291Z",
-            comment: "string",
-          },
-        ],
-        assigneeId: task.assignee.id,
+        status: status
       });
 
       var requestOptions = {
@@ -189,69 +152,9 @@ export default function KanbanBoard({ data }) {
         "http://localhost:8080/api/v1/tasks/changeStatus",
         requestOptions
       );
-      console.log("Sending request to backend:", raw); // Log request payload
-      console.log("Request Options:", requestOptions); // Log headers and options
-      console.log(response);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-    //  --------------------------
-
-      try {
-        const response = await fetch("http://localhost:8080/api/v1/tasks", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const tasks = await response.json();
-        console.log(tasks);
-        const notStartedTasks = tasks.data.filter(
-          (task) => task.status === "Open"
-        );
-        const inProgressTasks = tasks.data.filter(
-          (task) => task.status === "InProgress"
-        );
-        const completedTasks = tasks.data.filter(
-          (task) => task.status === "Done"
-        );
-
-        setNotStarted(notStartedTasks);
-        setInProgress(inProgressTasks);
-        setCompleted(completedTasks);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    }
-
-    // Separate tasks based on their status
-    const updatedNotStarted = notStarted.filter((t) => t.id !== task.id);
-    const updatedInProgress = inProgress.filter((t) => t.id !== task.id);
-    const updatedCompleted = completed.filter((t) => t.id !== task.id);
-
-    // Logic for moving tasks between columns
-    if (destination.droppableId === "2" && task.status === "notStarted") {
-      // Move the task to "In Progress"
-      console.log("Moving to In Progress");
-      setNotStarted(updatedNotStarted);
-      setInProgress((prevInProgress) => [
-        ...prevInProgress,
-        { ...task, status: "inProgress" },
-      ]);
-    } else if (
-      destination.droppableId === "3" &&
-      task.status === "inProgress"
-    ) {
-      // Move the task to "Done"
-      console.log("Moving to Done");
-      setInProgress(updatedInProgress);
-      setCompleted((prevCompleted) => [
-        ...prevCompleted,
-        { ...task, status: "completed" },
-      ]);
     }
   };
 

@@ -2,12 +2,10 @@ import { React, useEffect } from "react";
 import LeftNavigation from "./LeftNavigation";
 import ActivityLog from "./ActivityLog";
 import "../styles/css/Home.css";
-import { Button, Container, Nav } from "react-bootstrap";
 import { useState } from "react";
 import NewTask from "./CreateTask";
 import KanbanBoard from "./KanbanBoard";
 import axios from "axios";
-import { ColumnGroup, Component } from "ag-grid-community";
 import ProjectForm from "./ProjectForm";
 import AssignProject from "./AssignProject";
 import DeleteTask from "./DeleteTask";
@@ -18,8 +16,8 @@ const jwtToken = localStorage.getItem("jwtToken");
 
 const Home = () => {
   const [displayComponent, setDisplayComponent] = useState(null);
-  const [allTasks, setAllTask] = useState([{}]);
-  const [allProjectTasks, setAllProjectTask] = useState([{}]);
+  const [allTasks, setAllTask] = useState([]);
+  const [allProjectTasks, setAllProjectTask] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [refreshLeftNav, setRefreshLeftNav] = useState(false);
 
@@ -27,23 +25,49 @@ const Home = () => {
     setDisplayComponent(Component);
   };
 
-  const fetchAllTasks = async () => { 
+  const fetchAllTasks = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
+        headers: { Authorization: `Bearer ${jwtToken}` },
       });
-      const result = await response.data.data;
-      setAllTask(result);
+      setAllTask(response.data.data);
     } catch (error) {
-      console.log("Error", error);
+      console.error("Error fetching all tasks:", error);
     }
   };
+
+  const fetchTasksByProjectId = async (projectId) => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+        params: { projectId },
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching tasks by project ID:", error);
+      throw error;
+    }
+  };
+
+  const handleProjectSelection = async (projectId) => {
+    setSelectedProjectId(projectId);
+    try {
+      const projectTasks = await fetchTasksByProjectId(projectId);
+      setAllProjectTask(projectTasks);
+      handleDisplayComponent("Project");
+    } catch (error) {
+      console.error("Error handling project selection:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllTasks();
+  }, []);
+
   const refreshTasks = async () => {
     try {
-       fetchAllTasks();
-      
+      fetchAllTasks();
+
       setRefreshLeftNav((prev) => !prev); // Toggle refresh state
     } catch (error) {
       console.error("Error refreshing tasks:", error);
@@ -59,54 +83,23 @@ const Home = () => {
       case "DeleteTask":
         return <DeleteTask onButtonClick={handleDisplayComponent} />;
       case "CreateProject":
-        return <ProjectForm refreshTasks={refreshTasks} onButtonClick={handleDisplayComponent} />;
+        return (
+          <ProjectForm
+            refreshTasks={refreshTasks}
+            onButtonClick={handleDisplayComponent}
+          />
+        );
       case "DeleteProject":
         return <DeleteProject onButtonClick={handleDisplayComponent} />;
       case "Project":
         return allProjectTasks ? <KanbanBoard data={allProjectTasks} /> : null;
       case "AssignProject":
-        return <AssignProject onButtonClick={handleDisplayComponent}/>;
+        return <AssignProject onButtonClick={handleDisplayComponent} />;
       default:
         return allTasks && allTasks.length > 0 ? (
           <KanbanBoard data={allTasks} />
         ) : null;
     }
-  };
-
-  useEffect(() => {
-    fetchAllTasks();
-  }, [displayComponent]);
-
-  const fetchData = async (id) => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-        params: {
-          projectId: id,
-        },
-      });
-      const result = response.data.data;
-      return result;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
-    }
-  };
-  const handleIdFromTaskList = async (projectId) => {
-    console.log(projectId);
-    setSelectedProjectId(projectId);
-
-    fetchData(projectId)
-      .then((data) => {
-        console.log(data);
-        setAllProjectTask(data);
-        handleDisplayComponent("Project");
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
   };
 
   return (
@@ -115,8 +108,9 @@ const Home = () => {
         <div className="verticalNavbar">
           <LeftNavigation
             onButtonClick={handleDisplayComponent}
-            onRowClick={handleIdFromTaskList}
+            onRowClick={handleProjectSelection}
             refreshTrigger={refreshLeftNav}
+            selectedProjectId={selectedProjectId}
           />
         </div>
         <div className="main-content">{display()}</div>
