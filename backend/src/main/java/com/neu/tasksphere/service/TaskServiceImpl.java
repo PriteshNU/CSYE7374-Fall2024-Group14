@@ -214,46 +214,7 @@ public class TaskServiceImpl implements TaskService {
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task priority changed successfully"));
     }
-
-//    public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
-//        Task task = taskRepository.findById(request.getId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
-//
-//        System.out.println("Current State: " + task.getState().getClass().getSimpleName());
-//        switch (request.getStatus()) {
-//            case InProgress:
-//                task.start();
-//                break;
-//            case InReview:
-//                task.review();
-//                break;
-//            case Done:
-//                task.complete();
-//                break;
-//            case Cancelled:
-//                task.cancel();
-//                break;
-//            case Rejected:
-//                task.reject();
-//                break;
-//            case OnHold:
-//                task.hold();
-//                break;
-//            default:
-//                throw new IllegalArgumentException("Invalid task status");
-//        }
-//
-//        taskRepository.save(task);
-//
-//        TaskDecorator decoratedTask = new LoggingDecorator(new NotificationDecorator(request));
-//        decoratedTask.setStatus(request.getStatus());
-//
-//        // Update priority dynamically
-//        // Notify observers
-//        notificationService.notifyObservers(new TaskEvent(task, "TaskStatusChanged"));
-//
-//        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task status changed successfully"));
-//    }
+    
 public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
     // Fetch the task from the repository
     Task task = taskRepository.findById(request.getId())
