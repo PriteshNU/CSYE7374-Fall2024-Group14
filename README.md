@@ -3,15 +3,15 @@
 TaskSphere is a collaborative project and task management system inspired by Kanban principles. It offers a visual  board for streamlined project organization, allowing users to create, assign, and track tasks effectively. With features such as detailed task management, real-time progress monitoring, and user assignments, TaskSphere facilitates seamless collaboration. Authentication is handled through JWT tokens, ensuring secure user access. The system also supports export/import functionalities for efficient project management. TaskSphere aims to enhance team coordination and project success with its user-friendly interface and robust features.
 
 # Index
-1. [Introduction](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#tasksphere)
-2. [Tech Stack](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#tech-stack)
-3. [Flows](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#flows)
-4. [Concepts Used](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#concepts-used-few-examples)
-5. [Individual Contributions](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#induvidual-contributions)
-6. [Class Diagram](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#class-diagram)
-7. [Steps to Setup Backend](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#steps-to-setup-backend)
-8. [Steps to Setup Frontend](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#steps-to-setup-frontend)
-9. [Swagger Documentation](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19#swagger-documentation)
+1. [Introduction](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#tasksphere)
+2. [Tech Stack](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#tech-stack)
+3. [Flows](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#flows)
+4. [Concepts Used](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file##concepts-used-few-examples)
+5. [Desgin Pattens](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#design-patterns)
+6. [Class Diagram](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#class-diagram)
+7. [Steps to Setup Backend](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#steps-to-setup-backend)
+8. [Steps to Setup Frontend](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#steps-to-setup-frontend)
+9. [Swagger Documentation](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#swagger-documentation)
 
 # Tech Stack
 
