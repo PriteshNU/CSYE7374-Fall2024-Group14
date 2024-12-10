@@ -13,7 +13,6 @@ public class AuditLog {
 
     private String eventType;
 
-    @Lob
     private String message;
 
     private LocalDateTime timestamp;

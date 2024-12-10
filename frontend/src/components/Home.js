@@ -21,14 +21,23 @@ const Home = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [refreshLeftNav, setRefreshLeftNav] = useState(false);
 
+  const userId = localStorage.getItem("user_id");
+  const userRole = localStorage.getItem("user_role");
+  const isUserAdminOrManager = userRole === "Admin" || userRole === "Manager";
+
   const handleDisplayComponent = (Component) => {
     setDisplayComponent(Component);
   };
 
   const fetchAllTasks = async () => {
     try {
+      const params = {};
+      if (!isUserAdminOrManager) {
+        params.userId = userId;
+      }
       const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
         headers: { Authorization: `Bearer ${jwtToken}` },
+        params,
       });
       setAllTask(response.data.data);
     } catch (error) {
@@ -38,9 +47,14 @@ const Home = () => {
 
   const fetchTasksByProjectId = async (projectId) => {
     try {
+      const params = { projectId };
+      if (!isUserAdminOrManager) {
+        params.userId = userId;
+        params.projectId = projectId;
+      }
       const response = await axios.get(`${baseUrl}/api/v1/tasks`, {
         headers: { Authorization: `Bearer ${jwtToken}` },
-        params: { projectId },
+        params,
       });
       return response.data.data;
     } catch (error) {

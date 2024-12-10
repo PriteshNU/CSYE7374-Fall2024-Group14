@@ -91,9 +91,6 @@ const NewTask = ({ onButtonClick }) => {
   useEffect(() => {
     const fetchAssignees = async () => {
       try {
-        if (!formData.projectId) {
-          formData.projectId = 1;
-        }
         const response = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/v1/projects/${formData.projectId}/users`,
           {
@@ -128,7 +125,7 @@ const NewTask = ({ onButtonClick }) => {
             <option>Select Project</option>
             {projectData.map((project) => (
               <option key={project.id} value={project.id}>
-                {`${project.name} - ${project.id}`}
+                {`${project.name}`}
               </option>
             ))}
           </Form.Select>

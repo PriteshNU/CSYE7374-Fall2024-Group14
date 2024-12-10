@@ -25,12 +25,11 @@ const LeftNavigation = ({ onButtonClick, onRowClick, refreshTrigger  }) => {
           }
         );
         setUserProfile(response.data);
-        localStorage.setItem("user_id", response.data.id);
+
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
     };
-    console.log("////////")
     fetchUserProfile();
   }, [refreshTrigger]);
 

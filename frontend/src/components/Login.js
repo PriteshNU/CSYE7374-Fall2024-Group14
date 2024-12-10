@@ -17,6 +17,7 @@ const Login = () => {
   const handleOnChange = (e) => {
     setLoginFormData({ ...loginFormData, [e.target.name]: e.target.value });
   };
+
   const handleOnSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,6 +34,16 @@ const Login = () => {
 
       localStorage.setItem("user_role", tokenData.roles);
       localStorage.setItem("user_name", tokenData.sub);
+
+      const userprofile_response = await axios.get(
+        `${baseUrl}/api/v1/users/${tokenData.sub}/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      localStorage.setItem("user_id", userprofile_response.data.id);
 
       navigate("/");
     } catch (error) {
