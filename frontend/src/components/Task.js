@@ -46,13 +46,13 @@ const TaskPriority = styled.span`
   font-size: 12px;
 `;
 
-export default function Task({ task, index }) {
-  const navigate = useNavigate();
+export default function Task({ task, index, onTaskClick }) {
 
   const handleTaskClick = () => {
-    navigate(`/assignTask/${task.id}`);
+    localStorage.setItem("selectedTaskId", task.id);
+    onTaskClick("AssignTask");
   };
-  
+
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (

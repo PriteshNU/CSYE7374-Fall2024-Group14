@@ -8,6 +8,7 @@ import KanbanBoard from "./KanbanBoard";
 import axios from "axios";
 import ProjectForm from "./ProjectForm";
 import AssignProject from "./AssignProject";
+import AssignTask from "./AssignTask";
 import DeleteTask from "./DeleteTask";
 import DeleteProject from "./DeleteProject";
 
@@ -106,12 +107,19 @@ const Home = () => {
       case "DeleteProject":
         return <DeleteProject onButtonClick={handleDisplayComponent} />;
       case "Project":
-        return allProjectTasks ? <KanbanBoard data={allProjectTasks} /> : null;
+        return allProjectTasks ? (
+          <KanbanBoard
+            data={allProjectTasks}
+            onButtonClick={handleDisplayComponent}
+          />
+        ) : null;
       case "AssignProject":
         return <AssignProject onButtonClick={handleDisplayComponent} />;
+      case "AssignTask":
+        return <AssignTask onButtonClick={handleDisplayComponent} />;
       default:
         return allTasks && allTasks.length > 0 ? (
-          <KanbanBoard data={allTasks} />
+          <KanbanBoard data={allTasks} onButtonClick={handleDisplayComponent} />
         ) : null;
     }
   };

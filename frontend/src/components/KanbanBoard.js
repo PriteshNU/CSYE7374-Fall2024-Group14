@@ -29,8 +29,7 @@ const ColumnsContainer = styled.div`
   max-width: 1200px;
 `;
 
-
-export default function KanbanBoard({ data }) {
+export default function KanbanBoard({ data, onButtonClick }) {
   const [notStarted, setNotStarted] = useState([]);
   const [inProgress, setInProgress] = useState([]);
   const [completed, setCompleted] = useState([]);
@@ -39,26 +38,35 @@ export default function KanbanBoard({ data }) {
 
   useEffect(() => {
     const dataToDisplay = data;
-    
-    const filterNotStarted = dataToDisplay.filter(item => item.status === "Open");
+
+    const filterNotStarted = dataToDisplay.filter(
+      (item) => item.status === "Open"
+    );
     setNotStarted(filterNotStarted || [{}]);
 
-    const filterInProgress = dataToDisplay.filter(item => item.status === "InProgress");
+    const filterInProgress = dataToDisplay.filter(
+      (item) => item.status === "InProgress"
+    );
     setInProgress(filterInProgress || [{}]);
 
-    const filterCompleted = dataToDisplay.filter(item => item.status === "Done");
+    const filterCompleted = dataToDisplay.filter(
+      (item) => item.status === "Done"
+    );
     setCompleted(filterCompleted || [{}]);
 
-    const filterInReview = dataToDisplay.filter(item => item.status === "InReview");
+    const filterInReview = dataToDisplay.filter(
+      (item) => item.status === "InReview"
+    );
     setInReview(filterInReview || [{}]);
 
-    const filterOnHold = dataToDisplay.filter(item => item.status === "OnHold");
+    const filterOnHold = dataToDisplay.filter(
+      (item) => item.status === "OnHold"
+    );
     setOnHold(filterOnHold || [{}]);
-}, [data]);
+  }, [data]);
 
   // Function to handle the end of a drag operation
   const handleDragEnd = async (result) => {
-
     const { destination, source, draggableId } = result;
     // If the source and destination columns are the same, do nothing
     if (source.droppableId === destination.droppableId) {
@@ -84,73 +92,86 @@ export default function KanbanBoard({ data }) {
       var status = "";
       if (destination.droppableId === "2" && source.droppableId === "1") {
         status = "InProgress"; // Open to In Progress
-    } else if (destination.droppableId === "4") {
+      } else if (destination.droppableId === "4") {
         status = "InReview"; // Any state to In Review
-    } else if (destination.droppableId === "5" && source.droppableId != "1") {
+      } else if (destination.droppableId === "5" && source.droppableId != "1") {
         status = "OnHold"; // Any state to On Hold
-    } else if (destination.droppableId === "3" && source.droppableId === "2") {
+      } else if (
+        destination.droppableId === "3" &&
+        source.droppableId === "2"
+      ) {
         status = "Done"; // In Progress to Done
-    }else if (destination.droppableId === "2" && source.droppableId === "5") {
-      status = "InProgress"; // On Hold to In Progress
-  } 
-  else if (destination.droppableId === "2" && source.droppableId === "3") {
-    status = "InProgress"; // On Hold to In Progress
-} 
-  else if (destination.droppableId === "2" && source.droppableId === "4") {
-    status = "InProgress"; // On Hold to In Progress
-} 
-else if (destination.droppableId === "3" && source.droppableId === "4") {
-  status = "Done"; // On Hold to In Progress
-} 
-else if (destination.droppableId === "1" && source.droppableId === "2") {
-  status = "Open"; // On Hold to In Progress
-} 
-    else {
-      // Toast.error("Invalid drag-and-drop operation.");
+      } else if (
+        destination.droppableId === "2" &&
+        source.droppableId === "5"
+      ) {
+        status = "InProgress"; // On Hold to In Progress
+      } else if (
+        destination.droppableId === "2" &&
+        source.droppableId === "3"
+      ) {
+        status = "InProgress"; // On Hold to In Progress
+      } else if (
+        destination.droppableId === "2" &&
+        source.droppableId === "4"
+      ) {
+        status = "InProgress"; // On Hold to In Progress
+      } else if (
+        destination.droppableId === "3" &&
+        source.droppableId === "4"
+      ) {
+        status = "Done"; // On Hold to In Progress
+      } else if (
+        destination.droppableId === "1" &&
+        source.droppableId === "2"
+      ) {
+        status = "Open"; // On Hold to In Progress
+      } else {
+        // Toast.error("Invalid drag-and-drop operation.");
         console.error("Invalid drag-and-drop operation.");
         return;
-    }
+      }
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Authorization", `Bearer ${jwtToken}`);
-    // Update task status locally
-    const updatedTask = { ...task, status };
+      // Update task status locally
+      const updatedTask = { ...task, status };
 
-    // Remove task from source column and add to destination column
-    const removeFromSource = (column, setColumn) =>
+      // Remove task from source column and add to destination column
+      const removeFromSource = (column, setColumn) =>
         setColumn(column.filter((t) => t.id !== task.id));
 
-    const addToDestination = (setColumn) =>
+      const addToDestination = (setColumn) =>
         setColumn((prev) => [...prev, updatedTask]);
 
-    if (source.droppableId === "1") {
+      if (source.droppableId === "1") {
         removeFromSource(notStarted, setNotStarted);
-    } else if (source.droppableId === "2") {
+      } else if (source.droppableId === "2") {
         removeFromSource(inProgress, setInProgress);
-    } else if (source.droppableId === "3") {
+      } else if (source.droppableId === "3") {
         removeFromSource(completed, setCompleted);
-    } else if (source.droppableId === "4") {
+      } else if (source.droppableId === "4") {
         removeFromSource(inReview, setInReview);
-    } else if (source.droppableId === "5") {
+      } else if (source.droppableId === "5") {
         removeFromSource(onHold, setOnHold);
-    }
+      }
 
-    if (destination.droppableId === "2") {
+      if (destination.droppableId === "2") {
         addToDestination(setInProgress);
-    } else if (destination.droppableId === "3") {
+      } else if (destination.droppableId === "3") {
         addToDestination(setCompleted);
-    } else if (destination.droppableId === "4") {
+      } else if (destination.droppableId === "4") {
         addToDestination(setInReview);
-    } else if (destination.droppableId === "5") {
+      } else if (destination.droppableId === "5") {
         addToDestination(setOnHold);
-    } else if (destination.droppableId === "1") {
+      } else if (destination.droppableId === "1") {
         addToDestination(setNotStarted);
-    }
+      }
 
       var raw = JSON.stringify({
         id: task.id,
-        status: status
+        status: status,
       });
 
       var requestOptions = {
@@ -179,11 +200,36 @@ else if (destination.droppableId === "1" && source.droppableId === "2") {
       <BoardContainer>
         <BoardTitle>Kanban Board</BoardTitle>
         <ColumnsContainer>
-          <Column title="To Do" tasks={notStarted} id="1" />
-          <Column title="In Progress" tasks={inProgress} id="2" />
-          <Column title="Done" tasks={completed} id="3" />
-          <Column title="In Review" tasks={inReview} id="4" />
-          <Column title="On Hold" tasks={onHold} id="5" />
+          <Column
+            onTaskClick={onButtonClick}
+            title="To Do"
+            tasks={notStarted}
+            id="1"
+          />
+          <Column
+            onTaskClick={onButtonClick}
+            title="In Progress"
+            tasks={inProgress}
+            id="2"
+          />
+          <Column
+            onTaskClick={onButtonClick}
+            title="Done"
+            tasks={completed}
+            id="3"
+          />
+          <Column
+            onTaskClick={onButtonClick}
+            title="In Review"
+            tasks={inReview}
+            id="4"
+          />
+          <Column
+            onTaskClick={onButtonClick}
+            title="On Hold"
+            tasks={onHold}
+            id="5"
+          />
         </ColumnsContainer>
       </BoardContainer>
     </DragDropContext>

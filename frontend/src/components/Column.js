@@ -4,7 +4,6 @@ import Task from "./Task";
 import "../styles/css/scroll.css";
 import { Droppable } from "react-beautiful-dnd";
 
-
 const ColumnContainer = styled.div`
   background-color: #ffffff;
   border-radius: 8px;
@@ -26,14 +25,19 @@ const ColumnTitle = styled.h3`
   text-align: center;
 `;
 
-export default function Column({ title, tasks, id }) {
+export default function Column({ title, tasks, id, onTaskClick }) {
   return (
     <Droppable droppableId={id}>
       {(provided) => (
         <ColumnContainer ref={provided.innerRef} {...provided.droppableProps}>
           <ColumnTitle>{title}</ColumnTitle>
           {tasks.map((task, index) => (
-            <Task key={task.id} task={task} index={index} />
+            <Task
+              key={task.id}
+              task={task}
+              index={index}
+              onTaskClick={onTaskClick}
+            />
           ))}
           {provided.placeholder}
         </ColumnContainer>
@@ -41,4 +45,3 @@ export default function Column({ title, tasks, id }) {
     </Droppable>
   );
 }
-
