@@ -89,10 +89,11 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // Apply sorting
-        if (sortBy != null && !sortBy.isEmpty()) {
-            TaskSortingStrategy sortingStrategy = taskStrategyResolver.getSortingStrategy(sortBy);
-            taskStream = sortingStrategy.sortTasks(taskStream);
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "priority";
         }
+        TaskSortingStrategy sortingStrategy = taskStrategyResolver.getSortingStrategy(sortBy);
+        taskStream = sortingStrategy.sortTasks(taskStream);
 
         // Convert to DTOs
         List<TaskDTO> taskDTOList = taskStream

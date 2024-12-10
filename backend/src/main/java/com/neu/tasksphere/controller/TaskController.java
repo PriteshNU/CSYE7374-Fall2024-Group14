@@ -36,7 +36,7 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<PagedResponse<TaskDTO>> getAllTasks(
             @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
+            @RequestParam(name = "size", required = false, defaultValue = "50") Integer size,
             @RequestParam(name = "userId", required = false) Integer userId,
             @RequestParam(name = "projectId", required = false) Integer projectId,
             @RequestParam(name = "priority", required = false) TaskPriority priority,
