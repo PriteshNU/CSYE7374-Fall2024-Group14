@@ -6,7 +6,7 @@ TaskSphere is a collaborative project and task management system inspired by Kan
 1. [Introduction](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#tasksphere)
 2. [Tech Stack](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#tech-stack)
 3. [Flows](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#flows)
-4. [Concepts Used](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file##concepts-used-few-examples)
+4. [Concepts Used](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#concepts-used-few-examples)
 5. [Desgin Pattens](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#design-patterns)
 6. [Class Diagram](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#class-diagram)
 7. [Steps to Setup Backend](https://github.com/PriteshNU/CSYE7374-Fall2024-Group14?tab=readme-ov-file#steps-to-setup-backend)
