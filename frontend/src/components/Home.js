@@ -65,6 +65,7 @@ const Home = () => {
   };
 
   const handleProjectSelection = async (projectId) => {
+    if (projectId === selectedProjectId) return; // Avoid re-fetching for the same project
     setSelectedProjectId(projectId);
     try {
       const projectTasks = await fetchTasksByProjectId(projectId);
@@ -74,6 +75,7 @@ const Home = () => {
       console.error("Error handling project selection:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchAllTasks();

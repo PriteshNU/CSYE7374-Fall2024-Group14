@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "../styles/css/ProjectList.css";
-import { ListGroup, Container } from "react-bootstrap";
-import { FaFolder } from "react-icons/fa"; // Use folder icon for each project
+import { ListGroup, Container, Spinner, Alert } from "react-bootstrap";
+import { FaFolder } from "react-icons/fa";
+import { AiOutlineProject } from "react-icons/ai"; // Import a better project-related icon
+
 import axios from "axios";
 
 const jwtToken = localStorage.getItem("jwtToken");
 
 const ProjectList = ({ onRowClick, refresh, selectedProjectId }) => {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const user_id = localStorage.getItem("user_id");
   const userRole = localStorage.getItem("user_role");
@@ -37,10 +41,14 @@ const ProjectList = ({ onRowClick, refresh, selectedProjectId }) => {
             response.data
           );
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load projects. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
   }, [refresh]);
 
@@ -53,26 +61,37 @@ const ProjectList = ({ onRowClick, refresh, selectedProjectId }) => {
           overflowY: "auto",
         }}
       >
-        <ListGroup variant="flush">
-          {projects.map((project) => (
-            <ListGroup.Item
-              key={project.id}
-              onClick={() => onRowClick(project.id)}
-              className={`project-list-item ${
-                project.id === selectedProjectId ? "active" : ""
-              }`}
-            >
-              <div className="project-item-content">
-                <FaFolder className="project-icon" />
-                <span className="project-name">{project.name}</span>
-              </div>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        {loading && (
+          <div style={{ textAlign: "center", margin: "20px 0" }}>
+            <Spinner animation="border" variant="primary" />
+            <p>Loading projects...</p>
+          </div>
+        )}
+        {error && <Alert variant="danger">{error}</Alert>}
+        {!loading && !error && projects.length === 0 && (
+          <p style={{ textAlign: "center", color: "#666" }}>No projects found.</p>
+        )}
+        {!loading && !error && (
+          <ListGroup variant="flush">
+            {projects.map((project) => (
+              <ListGroup.Item
+                key={project.id}
+                onClick={() => onRowClick(project.id)}
+                className={`project-list-item ${
+                  project.id === selectedProjectId ? "active" : ""
+                }`}
+              >
+                <div className="project-item-content">
+                  <AiOutlineProject className="project-icon" />
+                  <span className="project-name">{project.name}</span>
+                </div>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
       </div>
     </Container>
   );
 };
 
 export default ProjectList;
-

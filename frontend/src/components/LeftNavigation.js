@@ -2,12 +2,23 @@ import React, { useState, useEffect } from "react";
 import "../styles/css/LeftNavbar.css";
 import { Nav, Container, Button } from "react-bootstrap";
 import ProjectList from "./ProjectList";
-import { FaTasks, FaPlus, FaProjectDiagram, FaUserPlus, FaTrash } from "react-icons/fa";
+import {
+  FaTasks,
+  FaPlus,
+  FaProjectDiagram,
+  FaUserPlus,
+  FaTrash,
+} from "react-icons/fa";
 import axios from "axios";
 
 const jwtToken = localStorage.getItem("jwtToken");
 
-const LeftNavigation = ({ onButtonClick, onRowClick, refreshTrigger  }) => {
+const LeftNavigation = ({
+  onButtonClick,
+  onRowClick,
+  refreshTrigger,
+  selectedProjectId,
+}) => {
   const userRole = localStorage.getItem("user_role");
   const userName = localStorage.getItem("user_name");
   const isUserAdminOrManager = userRole === "Admin" || userRole === "Manager";
@@ -25,7 +36,6 @@ const LeftNavigation = ({ onButtonClick, onRowClick, refreshTrigger  }) => {
           }
         );
         setUserProfile(response.data);
-
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
@@ -52,7 +62,11 @@ const LeftNavigation = ({ onButtonClick, onRowClick, refreshTrigger  }) => {
         <h6>Role: {userProfile.role}</h6>
       </Container>
       <hr />
-      <ProjectList onRowClick={onRowClick} refresh={refreshTrigger}/>
+      <ProjectList
+        onRowClick={onRowClick}
+        refresh={refreshTrigger}
+        selectedProjectId={selectedProjectId}
+      />
       <div className="action-buttons-container mt-3">
         <Button
           className="mb-3 d-flex align-items-center"

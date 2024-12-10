@@ -1,25 +1,50 @@
 .project-list-scroll {
-  padding: 0;
+  border-radius: 0; /* Removed rounded corners */
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .list-group-item {
-  border: none; /* Remove borders for a cleaner look */
-  border-radius: 12px; /* Round corners for a smoother look */
+  border: none;
+  border-radius: 0; /* Removed rounded corners */
   margin-bottom: 12px;
-  padding: 12px 20px; /* Add padding for more space */
-  background-color: #f8f9fa; /* Light background color */
-  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  padding: 12px 20px;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.project-icon {
+  font-size: 24px;
+  margin-right: 15px;
+  color: #007bff; 
+  transition: color 0.3s ease;
+}
+
+.project-list-item:hover .project-icon {
+  color: #fff;
 }
 
 .project-list-item:hover {
-  background-color: #007bff; /* Change background to blue when hovering */
-  color: white; /* White text on hover */
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: white;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for hover effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .project-list-item:active {
-  transform: scale(0.98); /* Add scale effect when clicked */
+  transform: scale(0.96);
+}
+
+.project-list-item.active {
+  background-color: #e3f2fd !important;
+  font-weight: bold;
+  border-left: 4px solid #007bff;
+}
+
+.project-list-item[aria-selected="true"] {
+  background-color: #e3f2fd !important;
+  font-weight: bold;
+  border-left: 4px solid #007bff;
 }
 
 .project-item-content {
@@ -30,22 +55,17 @@
 
 .project-icon {
   font-size: 20px;
-  margin-right: 15px; /* Add space between the icon and text */
-  color: #007bff; /* Icon color matching hover effect */
+  margin-right: 15px;
+  color: #007bff;
+  transition: color 0.3s ease;
 }
 
 .project-name {
-  font-weight: bold; /* Make project name bold */
-  font-size: 16px; /* Adjust font size for readability */
-  color: #333; /* Darker text color for better contrast */
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
 }
 
 .project-name:hover {
-  color: #fff; /* Change text color to white on hover */
-}
-
-.project-list-item.active {
-  background-color: #f0f8ff; /* Light blue background */
-  font-weight: bold;
-  border-left: 4px solid #007bff; /* Highlight border */
+  color: #fff;
 }

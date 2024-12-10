@@ -1,0 +1,41 @@
+/* Navbar customizations */
+.custom-navbar {
+    background-color: #212529; /* Darker shade for navbar */
+    padding: 10px 20px;
+  }
+  
+  .custom-navbar .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .custom-navbar .nav-link {
+    color: #adb5bd !important;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+  
+  .custom-navbar .nav-link:hover {
+    color: #ffffff !important;
+  }
+  
+  /* Logout button customization */
+  .custom-navbar .btn-outline-light {
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+  }
+  
+  /* Layout content spacing */
+  .layout-content {
+    padding: 20px;
+    min-height: calc(100vh - 100px); /* Adjust height to include navbar and footer */
+    background-color: #f8f9fa; /* Light gray background */
+  }
+  
+  /* Footer customization */
+  .custom-footer {
+    background-color: #212529; /* Match navbar color */
+    color: #adb5bd;
+  }
+  
