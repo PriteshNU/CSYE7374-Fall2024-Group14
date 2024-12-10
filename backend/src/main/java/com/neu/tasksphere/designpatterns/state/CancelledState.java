@@ -11,32 +11,15 @@ public class CancelledState implements TaskState {
         return instance;
     }
     @Override
-    public void start(Task task) {
-        throw new UnsupportedOperationException("Cancelled tasks cannot be restarted.");
-    }
-
-    @Override
-    public void hold(Task task) {
-        throw new UnsupportedOperationException("Cancelled tasks cannot be put on hold.");
-    }
-
-    @Override
-    public void complete(Task task) {
-        throw new UnsupportedOperationException("Cancelled tasks cannot be completed.");
-    }
-
-    @Override
-    public void review(Task task) {
-        throw new UnsupportedOperationException("Cancelled tasks cannot be reviewed.");
-    }
-
-    @Override
-    public void cancel(Task task) {
+    public void next(Task task) {
         throw new UnsupportedOperationException("Task is already cancelled.");
     }
 
+    public void pause(Task task) {
+        throw new UnsupportedOperationException("Task is already completed.");
+    }
     @Override
-    public void reject(Task task) {
-        throw new UnsupportedOperationException("Cancelled tasks cannot be rejected.");
+    public void prev(Task task) {
+        throw new UnsupportedOperationException("Task is already cancelled.");
     }
 }

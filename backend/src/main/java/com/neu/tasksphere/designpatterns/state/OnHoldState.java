@@ -9,40 +9,17 @@ public class OnHoldState implements TaskState {
         return instance;
     }
     @Override
-    public void start(Task task) {
-
+    public void next(Task task) {
         task.setStatus(TaskStatus.InProgress);
         task.setState(InProgressState.getInstance());
-
-     }
-
-    @Override
-    public void hold(Task task) {
-        throw new UnsupportedOperationException("Task is already on hold.");
     }
 
-    @Override
-    public void complete(Task task) {
-
-        task.setStatus(TaskStatus.Done);
-        task.setState(DoneState.getInstance());
+    public void pause(Task task) {
+        throw new UnsupportedOperationException("Task is on hold.");
     }
-
     @Override
-    public void review(Task task) {
-        task.setStatus(TaskStatus.InReview);
-        task.setState(InReviewState.getInstance());
-
-        
-    }
-
-    @Override
-    public void cancel(Task task) {
-        task.setStatus(TaskStatus.Cancelled);
-    }
-
-    @Override
-    public void reject(Task task) {
-        throw new UnsupportedOperationException("Task cannot be rejected from Open state.");
+    public void prev(Task task) {
+        task.setStatus(TaskStatus.InProgress);
+        task.setState(InProgressState.getInstance());
     }
 }
