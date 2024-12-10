@@ -222,20 +222,8 @@ for (Project p : projects) {
    - The MVC pattern is implicitly applied in the task management module. The `Controller` acts as the controller, handling user input and directing it to the `ServiceImpl` for processing. The `DTO` & `Entity` serves as the model, representing the data, and the view is represented by the API endpoints, which return responses to the user.
 
 
-# Induvidual Contributions
-
-| Name                  | NU ID       | Contributions                                                                                                         
-|-----------------------|-------------|-----------------------------------------------------------------------------------------------------------------------
-| Aashish Chaple        | #002680570  | Streams, Enums, Strategy Pattern, MVC Design Pattern
-| Akhileshkumar Kumbar  | #002201470  | Lazy Singleton Design Pattern, Enum Singleton Factory Pattern
-| Akshay Bharadwaj      | #002745765  | Observer Design Pattern, Streams, MVC Design Pattern
-| Pritesh Nimje         | #002817324  | Repository Pattern, Observer Pattern, MVC Design Pattern, Streams
-| Ruchika Shashidhara   | #002245068  | Comparable, Streams, Enum Singleton & Lazy Singleton Factory Pattern
-| Sai Geeta Acharya     | #002627749  | Comparator, Inner Classes, Eager Singleton Factory Pattern
-| Yuchen Zhang          | #002646829  | CSV Files, Repository Design Pattern, MVC Design Pattern
-
 # Class Diagram
-![tasksphere](https://github.com/CSYE6200-Object-Oriented-DesignFall2023/final-project-final-group-19/assets/144740650/e75ca690-b27a-400c-b5d3-9a3fd3f19254)
+![tasksphere](/backend/uml_diagram.png)
 
 # Steps to Setup Backend
 
