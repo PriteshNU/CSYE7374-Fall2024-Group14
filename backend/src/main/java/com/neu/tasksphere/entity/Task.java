@@ -7,7 +7,6 @@ import com.neu.tasksphere.designpatterns.state.InProgressState;
 import com.neu.tasksphere.designpatterns.state.InReviewState;
 import com.neu.tasksphere.designpatterns.state.OnHoldState;
 import com.neu.tasksphere.designpatterns.state.OpenState;
-import com.neu.tasksphere.designpatterns.state.RejectedState;
 import com.neu.tasksphere.designpatterns.state.TaskState;
 import com.neu.tasksphere.entity.enums.TaskPriority;
 import com.neu.tasksphere.entity.enums.TaskStatus;
@@ -172,29 +171,31 @@ public class Task implements Comparable<Task> {
         return state;
     }
 
-    public void start() {
-        state.start(this);
+
+    public void nextState() {
+        try {
+            state.next(this);
+        } catch (UnsupportedOperationException e) {
+            throw new IllegalArgumentException("Cannot transition to the next state from " + state.getClass().getSimpleName());
+        }
     }
 
-    public void hold() {
-        state.hold(this);
+    public void pauseState() {
+        try {
+            state.pause(this);
+        } catch (UnsupportedOperationException e) {
+            throw new IllegalArgumentException("Cannot transition to the pause state from " + state.getClass().getSimpleName());
+        }
     }
 
-    public void complete() {
-        state.complete(this);
+    public void prevState() {
+        try {
+            state.prev(this);
+        } catch (UnsupportedOperationException e) {
+            throw new IllegalArgumentException("Cannot transition to the previous state from " + state.getClass().getSimpleName());
+        }
     }
 
-    public void review() {
-        state.review(this);
-    }
-
-    public void cancel() {
-        state.cancel(this);
-    }
-
-    public void reject() {
-        state.reject(this);
-    }
 
     public String toString() {
         return "Task(id=" + this.getId() +
@@ -231,9 +232,6 @@ public class Task implements Comparable<Task> {
                 break;
             case Cancelled:
                 this.state = CancelledState.getInstance();
-                break;
-            case Rejected:
-                this.state = RejectedState.getInstance();
                 break;
             default:
                 throw new IllegalStateException("Unknown TaskStatus: " + this.status);

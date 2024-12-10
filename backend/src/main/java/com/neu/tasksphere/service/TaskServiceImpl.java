@@ -5,6 +5,7 @@ import com.neu.tasksphere.designpatterns.decorator.LoggingDecorator;
 import com.neu.tasksphere.designpatterns.decorator.NotificationDecorator;
 import com.neu.tasksphere.designpatterns.decorator.TaskDecorator;
 import com.neu.tasksphere.designpatterns.factory.TaskDTOFactory;
+import com.neu.tasksphere.designpatterns.state.TaskState;
 import com.neu.tasksphere.designpatterns.strategy.TaskFilteringStrategy;
 import com.neu.tasksphere.designpatterns.strategy.TaskSortingStrategy;
 import com.neu.tasksphere.designpatterns.strategy.TaskStrategyResolver;
@@ -213,45 +214,57 @@ public class TaskServiceImpl implements TaskService {
 
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task priority changed successfully"));
     }
+    
+public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
+    // Fetch the task from the repository
+    Task task = taskRepository.findById(request.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
 
-    public ResponseEntity<ApiResponse> changeTaskStatus(TaskRequest request) {
-        Task task = taskRepository.findById(request.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "ID", request.getId()));
+    // Current and requested states
+    TaskState currentState = task.getState();
+    TaskStatus requestedStatus = request.getStatus();
 
-        System.out.println("Current State: " + task.getState().getClass().getSimpleName());
-        switch (request.getStatus()) {
-            case InProgress:
-                task.start();
-                break;
-            case InReview:
-                task.review();
-                break;
-            case Done:
-                task.complete();
-                break;
-            case Cancelled:
-                task.cancel();
-                break;
-            case Rejected:
-                task.reject();
-                break;
-            case OnHold:
-                task.hold();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid task status");
+    System.out.println("Current State: " + currentState.getClass().getSimpleName());
+    System.out.println("Requested State: " + requestedStatus);
+
+    try {
+        // If the requested state matches the current state, no action needed
+        if (task.getStatus().equals(requestedStatus)) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "Task is already in the requested state."));
         }
 
+        // Handle transitions explicitly
+        if (requestedStatus == TaskStatus.OnHold) {
+            // Pause the task if transitioning to OnHold
+            currentState.pause(task);
+        } else if (isForwardTransition(task.getStatus(), requestedStatus)) {
+            // Transition to the next state
+            currentState.next(task);
+        } else if (isBackwardTransition(task.getStatus(), requestedStatus)) {
+            // Transition to the previous state
+            currentState.prev(task);
+        } else {
+            throw new IllegalArgumentException("Invalid state transition.");
+        }
+
+        // Save the updated task
         taskRepository.save(task);
 
-        TaskDecorator decoratedTask = new LoggingDecorator(new NotificationDecorator(request));
-        decoratedTask.setStatus(request.getStatus());
+        return ResponseEntity.ok(new ApiResponse(true, "Task state updated successfully."));
+    } catch (UnsupportedOperationException | IllegalArgumentException e) {
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse(false, "Error during state transition: " + e.getMessage()));
+    }
+}
 
-        // Update priority dynamically
-        // Notify observers
-        notificationService.notifyObservers(new TaskEvent(task, "TaskStatusChanged"));
+    // Helper methods to validate transition direction
+    private boolean isForwardTransition(TaskStatus currentStatus, TaskStatus requestedStatus) {
+        return requestedStatus.ordinal() > currentStatus.ordinal();
+    }
 
-        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Task status changed successfully"));
+    private boolean isBackwardTransition(TaskStatus currentStatus, TaskStatus requestedStatus) {
+        return requestedStatus.ordinal() < currentStatus.ordinal();
     }
 
     private TaskDTO mapToTaskDTO(Task task) {

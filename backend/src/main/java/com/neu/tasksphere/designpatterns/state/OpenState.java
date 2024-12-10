@@ -9,36 +9,17 @@ public class OpenState implements TaskState {
         return instance;
     }
     @Override
-    public void start(Task task) {
+    public void next(Task task) {
         task.setStatus(TaskStatus.InProgress);
         task.setState(InProgressState.getInstance());
-        System.out.println("Task transitioned from Open to InProgress.");
     }
-
     @Override
-    public void hold(Task task) {
-        throw new UnsupportedOperationException("Task cannot be put on hold from Open state.");
+    public void pause(Task task) {
+        throw new UnsupportedOperationException("Task is not yet started.");
     }
-
     @Override
-    public void complete(Task task) {
-        throw new UnsupportedOperationException("Task cannot be completed from Open state.");
+    public void prev(Task task) {
+        throw new UnsupportedOperationException("Task is not yet started.");
     }
 
-    @Override
-    public void review(Task task) {
-        throw new UnsupportedOperationException("Task cannot be reviewed from Open state.");
-    }
-
-    @Override
-    public void cancel(Task task) {
-
-        task.setStatus(TaskStatus.Cancelled);
-        task.setState(CancelledState.getInstance());
-    }
-
-    @Override
-    public void reject(Task task) {
-        throw new UnsupportedOperationException("Task cannot be rejected from Open state.");
-    }
 }

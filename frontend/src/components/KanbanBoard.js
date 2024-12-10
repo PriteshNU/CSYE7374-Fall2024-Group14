@@ -93,6 +93,18 @@ export default function KanbanBoard({ data }) {
     }else if (destination.droppableId === "2" && source.droppableId === "5") {
       status = "InProgress"; // On Hold to In Progress
   } 
+  else if (destination.droppableId === "2" && source.droppableId === "3") {
+    status = "InProgress"; // On Hold to In Progress
+} 
+  else if (destination.droppableId === "2" && source.droppableId === "4") {
+    status = "InProgress"; // On Hold to In Progress
+} 
+else if (destination.droppableId === "3" && source.droppableId === "4") {
+  status = "Done"; // On Hold to In Progress
+} 
+else if (destination.droppableId === "1" && source.droppableId === "2") {
+  status = "Open"; // On Hold to In Progress
+} 
     else {
       // Toast.error("Invalid drag-and-drop operation.");
         console.error("Invalid drag-and-drop operation.");

@@ -5,10 +5,8 @@ import com.neu.tasksphere.entity.Task;
 import com.neu.tasksphere.entity.Task;
 
 public interface TaskState {
-    void start(Task task);
-    void hold(Task task);
-    void complete(Task task);
-    void review(Task task);
-    void cancel(Task task);
-    void reject(Task task);
+public void next(Task task);
+public void pause(Task task);
+public void prev(Task task);
+
 }
