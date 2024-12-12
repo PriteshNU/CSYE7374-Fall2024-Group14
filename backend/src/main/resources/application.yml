@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://cyse7374-do-user-15791858-0.m.db.ondigitalocean.com:25060/tasksphere?sslmode=require
-    username: doadmin
-    password: AVNS_mBzxzKrRdJ8OdbseJF8
+    url: jdbc:postgresql://<dbhost>:<dbport>/tasksphere?sslmode=require
+    username: <username>
+    password: <password>
     dbcp2:
       test-while-idle: true
       validation-query: select 1
@@ -17,13 +17,12 @@ spring:
     database: postgresql
 
 mailgun:
-  api-key: 5b033328917a86d90a4d7636c067d12e-da554c25-281a91c0
-  domain: pritesh-nimje.me
-
+  api-key: <api-key>
+  domain: <domain>
 application:
   security:
     jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      secret-key: <secret-key>
       expiration: 86400000 # a day
 
 cors:
